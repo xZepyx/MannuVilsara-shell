@@ -2,9 +2,7 @@ pragma ComponentBehavior: Bound
 
 import Quickshell
 import Quickshell.Io
-import Quickshell.Hyprland
 import QtQuick
-import QtQuick.Layouts
 import "bar"
 import "core"
 import "background"
@@ -15,16 +13,34 @@ import "clipboard"
 ShellRoot {
     id: root
 
-    Colors { id: colors }
+    Colors {
+        id: colors
+    }
 
-    CpuService { id: cpuService }
-    OsService { id: osService }
-    MemService { id: memService }
-    DiskService { id: diskService }
-    VolumeService { id: volumeService }
-    TimeService { id: timeService }
-    ActiveWindowService { id: activeWindowService }
-    LayoutService { id: layoutService }
+    CpuService {
+        id: cpuService
+    }
+    OsService {
+        id: osService
+    }
+    MemService {
+        id: memService
+    }
+    DiskService {
+        id: diskService
+    }
+    VolumeService {
+        id: volumeService
+    }
+    TimeService {
+        id: timeService
+    }
+    ActiveWindowService {
+        id: activeWindowService
+    }
+    LayoutService {
+        id: layoutService
+    }
 
     // Font
     property string fontFamily: "JetBrainsMono Nerd Font"
@@ -40,7 +56,7 @@ ShellRoot {
     property string currentLayout: layoutService.layout
 
     Background {}
-    
+
     AppLauncher {
         id: launcher
         visible: false
@@ -50,7 +66,7 @@ ShellRoot {
     IpcHandler {
         target: "launcher"
         function toggle() {
-            launcher.visible = !launcher.visible
+            launcher.visible = !launcher.visible;
         }
     }
     Clipboard {
@@ -60,17 +76,19 @@ ShellRoot {
     // 1. Toggle Handler (For your keybind: Super+V)
     IpcHandler {
         target: "clipboard"
-        function toggle() { clipboard.visible = !clipboard.visible }
+        function toggle() {
+            clipboard.visible = !clipboard.visible;
+        }
     }
 
     // 2. UPDATE Handler (For the script you found)
     // Listens for: qs -c mannu ipc call cliphistService update
     IpcHandler {
         target: "cliphistService"
-        
+
         function update() {
             // This runs the refresh() function we just added to Clipboard.qml
-            clipboard.refresh() 
+            clipboard.refresh();
         }
     }
 
