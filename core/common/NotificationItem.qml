@@ -19,9 +19,6 @@ Rectangle {
     color: theme ? theme.surface : "#252932"
     radius: 12
 
-    scale: notifMouse.containsMouse ? 1.02 : 1.0
-    Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutQuad } }
-
     RowLayout {
         anchors.fill: parent
         anchors.margins: 16
@@ -124,15 +121,11 @@ Rectangle {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
 
-                onClicked: removeRequested()
+                onClicked: {
+                    console.log("NotificationItem close clicked for ID:", notifId)
+                    removeRequested()
+                }
             }
         }
-    }
-
-    MouseArea {
-        id: notifMouse
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
     }
 }

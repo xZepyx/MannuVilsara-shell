@@ -16,6 +16,30 @@ Rectangle {
     color: theme ? theme.tile : "#2F333D"
     radius: 12
 
+    // Full-area MouseArea for wheel events and left-click positioning (overlay)
+    MouseArea {
+        anchors.fill: parent
+        z: 1 // Above content but below any interactive elements
+
+        onWheel: function(wheel) {
+            // Adjust value based on scroll direction
+            // Use a step size of 0.05 (5%) per scroll
+            var step = 0.05
+            if (wheel.angleDelta.y > 0) {
+                // Scroll up - increase value
+                value = Math.min(1, value + step)
+            } else {
+                // Scroll down - decrease value
+                value = Math.max(0, value - step)
+            }
+        }
+
+        onClicked: function(mouse) {
+            // Set value based on click position across the entire width
+            value = Math.max(0, Math.min(1, mouse.x / width))
+        }
+    }
+
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
@@ -25,26 +49,48 @@ Rectangle {
         RowLayout {
             Layout.fillWidth: true
 
-            Text {
-                text: icon
-                font.pixelSize: theme ? theme.sliderIconSize : 20
-                font.family: "Symbols Nerd Font"
-                color: theme ? theme.text : "#E8EAF0"
-            }
-
-            Text {
-                text: label
-                font.pixelSize: 14
-                font.weight: Font.Medium
-                color: theme ? theme.text : "#E8EAF0"
+            MouseArea {
                 Layout.fillWidth: true
-            }
+                Layout.fillHeight: true
+                cursorShape: pressed ? Qt.ClosedHandCursor : Qt.OpenHandCursor
 
-            Text {
-                text: Math.round(value * 100) + "%"
-                font.pixelSize: 14
-                font.weight: Font.Medium
-                color: theme ? theme.secondary : "#9BA3B8"
+                onPositionChanged: function(mouse) {
+                    if (pressed) {
+                        value = Math.max(0, Math.min(1, mouse.x / width))
+                    }
+                }
+
+                onPressed: function(mouse) {
+                    value = Math.max(0, Math.min(1, mouse.x / width))
+                }
+
+                // Pass through to content
+                RowLayout {
+                    anchors.fill: parent
+                    spacing: 10
+
+                    Text {
+                        text: icon
+                        font.pixelSize: theme ? theme.sliderIconSize : 20
+                        font.family: "Symbols Nerd Font"
+                        color: theme ? theme.text : "#E8EAF0"
+                    }
+
+                    Text {
+                        text: label
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
+                        color: theme ? theme.text : "#E8EAF0"
+                        Layout.fillWidth: true
+                    }
+
+                    Text {
+                        text: Math.round(value * 100) + "%"
+                        font.pixelSize: 14
+                        font.weight: Font.Medium
+                        color: theme ? theme.secondary : "#9BA3B8"
+                    }
+                }
             }
         }
 

@@ -14,7 +14,12 @@ PanelWindow {
     required property var globalState
     required property var notifManager
 
-    readonly property int topBarHeight: 50
+    readonly property var removeNotification: function(id) {
+        notifManager.removeById(id)
+    }
+
+    // Expandable state
+    property bool isExpanded: false
 
     QtObject {
         id: theme
@@ -147,7 +152,7 @@ PanelWindow {
         Flickable {
             anchors.fill: parent
             anchors.margins: theme.contentMargins
-            contentHeight: contentLayout.height
+            contentHeight: contentLayout.implicitHeight
             clip: true
             interactive: true
             boundsBehavior: Flickable.StopAtBounds
@@ -295,7 +300,11 @@ PanelWindow {
                             Layout.fillWidth: true
                         }
 
+                        // Bottom 2 buttons - slide down from under expand button when expanded
                         ToggleButton {
+                            opacity: root.isExpanded ? 1 : 0
+                            Layout.preferredHeight: root.isExpanded ? implicitHeight : 0
+                            clip: true
                             label: "Do Not Disturb"
                             sublabel: "Off"
                             icon: "󰂛"
@@ -303,9 +312,26 @@ PanelWindow {
                             showChevron: false
                             theme: theme
                             Layout.fillWidth: true
+
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+
+                            Behavior on Layout.preferredHeight {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                         }
 
                         ToggleButton {
+                            opacity: root.isExpanded ? 1 : 0
+                            Layout.preferredHeight: root.isExpanded ? implicitHeight : 0
+                            clip: true
                             label: "Microphone"
                             sublabel: "Active"
                             icon: "󰍬"
@@ -313,10 +339,27 @@ PanelWindow {
                             showChevron: false
                             theme: theme
                             Layout.fillWidth: true
+
+                            Behavior on opacity {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
+
+                            Behavior on Layout.preferredHeight {
+                                NumberAnimation {
+                                    duration: 300
+                                    easing.type: Easing.OutCubic
+                                }
+                            }
                         }
                     }
+
+                    // Expand/Collapse button moved to under sliders
                 }
 
+                // Media controls - always visible
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 16
@@ -342,8 +385,33 @@ PanelWindow {
                         value: 0.80
                         theme: theme
                     }
+
+                    // Expand/Collapse button - under sliders
+                    Rectangle {
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: 40
+                        color: expandBtn2.pressed ? theme.tile : "transparent"
+                        radius: 8
+
+                        Behavior on color { ColorAnimation { duration: 150 } }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: root.isExpanded ? "󰅃" : "󰅀"  // Up arrow when expanded, down arrow when collapsed
+                            font.pixelSize: 16
+                            font.family: "Symbols Nerd Font"
+                            color: theme.accent
+                        }
+
+                        MouseArea {
+                            id: expandBtn2
+                            anchors.fill: parent
+                            onClicked: root.isExpanded = !root.isExpanded
+                        }
+                    }
                 }
 
+                // Separator - always visible since notifications are always visible
                 Rectangle {
                     Layout.fillWidth: true
                     Layout.topMargin: theme.sectionSpacing
@@ -351,10 +419,19 @@ PanelWindow {
                     color: theme.border
                 }
 
+                // Notifications - shifts down with animation when expanded
                 ColumnLayout {
                     Layout.fillWidth: true
                     Layout.fillHeight: true
                     spacing: 12
+                    Layout.topMargin: isExpanded ? 120 : 0
+
+                    Behavior on Layout.topMargin {
+                        NumberAnimation {
+                            duration: 300
+                            easing.type: Easing.OutCubic
+                        }
+                    }
 
                     RowLayout {
                         Layout.fillWidth: true
@@ -383,18 +460,41 @@ PanelWindow {
                         }
                     }
 
-                    ListView {
+                    ColumnLayout {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
-                        clip: true
                         spacing: 12
-                        model: root.notifManager.notifications
 
+                        Repeater {
+                            model: root.notifManager.notifications
+
+                            NotificationItem {
+                                required property var model
+                                required property int index
+                                Layout.fillWidth: true
+                                notifId: model.id
+                                summary: model.summary || ""
+                                body: model.body || ""
+                                image: model.image || ""
+                                appIcon: model.appIcon || ""
+                                theme: theme
+
+                                onRemoveRequested: {
+                                    console.log("SidePanel received removeRequested for ID:", notifId)
+                                    root.notifManager.removeById(notifId)
+                                }
+
+                                Component.onCompleted: {
+                                    console.log("NotificationItem created via Repeater:", summary, "ID:", notifId)
+                                }
+                            }
+                        }
+
+                        // Empty state when no notifications
                         Rectangle {
-                            visible: parent.count === 0
-                            anchors.centerIn: parent
-                            width: parent.width
-                            height: 100
+                            visible: root.notifManager.notifications.count === 0
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
                             color: "transparent"
 
                             ColumnLayout {
@@ -416,18 +516,6 @@ PanelWindow {
                                     Layout.alignment: Qt.AlignHCenter
                                 }
                             }
-                        }
-
-                        delegate: NotificationItem {
-                            required property var model
-                            required property int index
-                            notifId: model.id
-                            summary: model.summary || ""
-                            body: model.body || ""
-                            image: model.image || ""
-                            appIcon: model.appIcon || ""
-                            theme: theme
-                            onRemoveRequested: root.notifManager.removeById(notifId)
                         }
                     }
                 }
