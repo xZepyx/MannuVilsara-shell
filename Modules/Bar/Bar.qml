@@ -55,7 +55,7 @@ Rectangle {
         anchors.rightMargin: 12
         spacing: 8
 
-        // Logo
+
         Rectangle {
             Layout.preferredWidth: 26
             Layout.preferredHeight: 26
@@ -73,7 +73,7 @@ Rectangle {
 
         VerticalDivider {}
 
-          // Info Panel Button
+
         Rectangle {
             Layout.preferredHeight: 26
             Layout.preferredWidth: 26
@@ -109,7 +109,7 @@ Rectangle {
             }
         }
 
-        // --- WORKSPACE CAROUSEL ---
+
         Rectangle {
             id: wsContainer
             Layout.preferredWidth: 150
@@ -119,19 +119,16 @@ Rectangle {
             radius: height / 2
             clip: true
 
-            // 1. GLOBAL SCROLL HANDLER (The Fix)
-            // This sits underneath the items but captures the wheel events for the whole container
+
             MouseArea {
                 anchors.fill: parent
-                // Allow clicks to pass through to the buttons below
-                propagateComposedEvents: true
-                // Don't "eat" the click events, just the wheel events
+
                 onClicked: mouse.accepted = false
                 onPressed: mouse.accepted = false
                 onReleased: mouse.accepted = false
 
                 onWheel: wheel => {
-                    // Standard scrolling logic
+
                     if (wheel.angleDelta.y > 0) {
                         Hyprland.dispatch("workspace -1");
                     } else {
@@ -146,7 +143,7 @@ Rectangle {
                 orientation: ListView.Horizontal
                 spacing: 4
 
-                // 2. Disable internal scrolling so it doesn't fight Hyprland
+
                 interactive: false
 
                 highlightRangeMode: ListView.StrictlyEnforceRange
@@ -219,7 +216,7 @@ Rectangle {
             Layout.fillWidth: true
         }
 
-        // Active Window
+
         InfoPill {
             visible: activeWindow !== ""
             Layout.maximumWidth: 400
@@ -241,7 +238,7 @@ Rectangle {
             Layout.fillWidth: true
         }
 
-        // Stats
+
         InfoPill {
             Row {
                 spacing: 6
@@ -303,7 +300,7 @@ Rectangle {
             }
         }
 
-        // Wallpaper Selector
+
         Rectangle {
             Layout.preferredHeight: 26
             Layout.preferredWidth: 26
@@ -339,7 +336,7 @@ Rectangle {
             }
         }
 
-         // Clock
+
         Rectangle {
             Layout.preferredHeight: 26
             Layout.preferredWidth: clockText.implicitWidth + 24
@@ -358,7 +355,7 @@ Rectangle {
 
       
 
-        // Power Menu Button
+
         Rectangle {
             Layout.preferredHeight: 26
             Layout.preferredWidth: 26

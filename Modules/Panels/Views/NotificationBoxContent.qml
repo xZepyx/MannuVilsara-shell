@@ -13,7 +13,7 @@ ColumnLayout {
     required property var notifManager
     required property var theme
 
-    // --- Header ---
+
     Rectangle {
         Layout.fillWidth: true
         implicitHeight: 44
@@ -63,7 +63,7 @@ ColumnLayout {
         }
     }
     
-    // Separator
+
     Rectangle {
         Layout.fillWidth: true
         height: 1
@@ -72,12 +72,12 @@ ColumnLayout {
         Layout.bottomMargin: 8
     }
 
-    // List
+
     ListView {
         id: notifList
         Layout.fillWidth: true
         Layout.fillHeight: true
-        // Allow the list to define the height of the layout, up to a point handled by the parent container
+
         implicitHeight: contentItem.childrenRect.height
         Layout.minimumHeight: 100 
         
@@ -96,7 +96,7 @@ ColumnLayout {
             onRemoveRequested: root.notifManager.removeById(notifId)
         }
 
-        // Empty state
+
         Text {
             anchors.centerIn: parent
             visible: parent.count === 0

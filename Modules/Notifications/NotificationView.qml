@@ -14,7 +14,7 @@ Rectangle {
         anchors.fill: parent
         spacing: 10
 
-        // --- HEADER ---
+
         RowLayout {
             Layout.fillWidth: true
             Layout.bottomMargin: 10
@@ -25,7 +25,7 @@ Rectangle {
                 Layout.fillWidth: true
             }
 
-            // Clear All Button
+
             Rectangle {
                 Layout.preferredWidth: 70; Layout.preferredHeight: 28
                 radius: 6
@@ -43,7 +43,7 @@ Rectangle {
             }
         }
 
-        // --- EMPTY STATE ---
+
         Item {
             Layout.fillWidth: true; Layout.fillHeight: true
             visible: manager.notifications.count === 0
@@ -54,7 +54,7 @@ Rectangle {
             }
         }
 
-        // --- NOTIFICATION LIST ---
+
         ListView {
             Layout.fillWidth: true; Layout.fillHeight: true
             visible: manager.notifications.count > 0
@@ -63,8 +63,7 @@ Rectangle {
             model: manager.notifications
 
             delegate: Rectangle {
-                // 1. Fix Width: Use ListView.view.width instead of parent.width 
-                // to prevent scrollbar overlap issues.
+
                 width: ListView.view.width
                 height: 80
                 radius: 12
@@ -75,9 +74,7 @@ Rectangle {
                     anchors.margins: 12
                     spacing: 12
 
-                    // --- ICON CONTAINER ---
-                    // We wrap the image in a Rectangle so space is reserved 
-                    // even if the image URL is broken/empty.
+
                     Rectangle {
                         Layout.preferredWidth: 36
                         Layout.preferredHeight: 36
@@ -97,7 +94,7 @@ Rectangle {
                         }
                     }
 
-                    // --- TEXT CONTENT ---
+
                     ColumnLayout {
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignVCenter
@@ -139,16 +136,14 @@ Rectangle {
                         }
                     }
 
-                    // --- CLOSE BUTTON CONTAINER ---
-                    // Fixing the missing cross: We wrap it in a Rectangle 
-                    // so the Layout calculates its size correctly.
+
                     Rectangle {
                         Layout.preferredWidth: 26
                         Layout.preferredHeight: 26
                         Layout.alignment: Qt.AlignVCenter
                         radius: 13
                         
-                        // Hover effect
+
                         color: closeMouse.containsMouse ? "#45475a" : "transparent"
 
                         Text { 
@@ -164,8 +159,7 @@ Rectangle {
                             hoverEnabled: true
                             
                             onClicked: {
-                                // FIX FOR "Clearing all under it"
-                                // Use ID if available, otherwise ensure index is stable
+
                                 if (typeof manager.removeById === "function") {
                                     manager.removeById(model.id) 
                                 } else {

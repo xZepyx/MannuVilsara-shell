@@ -11,7 +11,7 @@ PanelWindow {
 
     required property var manager
     
-    // --- Data Latching ---
+
     // We capture the notification data locally so it persists even if the manager clears it.
     property string notifTitle: ""
     property string notifBody: ""
@@ -19,19 +19,19 @@ PanelWindow {
     property string notifImage: ""
     property int notifUrgency: 1
     
-    // State
+
     property bool showing: false
     
-    // Configuration
+
     property int displayTime: 6000
     
-    // Positioning
+
     anchors {
         top: true
         right: true
     }
     
-    // Margins to avoid top bar
+
     WlrLayershell.margins.top: 60
     WlrLayershell.margins.right: 20
     
@@ -44,7 +44,12 @@ PanelWindow {
     
     color: "transparent"
     
-    // --- Logic ---
+    // Input Mask
+    mask: Region {
+        item: content
+    }
+    
+
     
     Connections {
         target: manager
@@ -83,7 +88,7 @@ PanelWindow {
         property color urgent: "#f38ba8" // Red
     }
     
-    // --- Visuals ---
+
     
     Item {
         id: content
@@ -95,7 +100,7 @@ PanelWindow {
         Behavior on x { NumberAnimation { duration: 400; easing.type: Easing.OutBack } }
         Behavior on opacity { NumberAnimation { duration: 300 } }
         
-        // Shadow/Glow
+
         layer.enabled: true
         layer.effect: DropShadow {
             transparentBorder: true
@@ -113,7 +118,7 @@ PanelWindow {
             border.width: 1
             border.color: root.notifUrgency === 2 ? theme.urgent : theme.border
             
-            // Progress Bar (Time remaining)
+
             Rectangle {
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
@@ -132,17 +137,7 @@ PanelWindow {
                     visible: false // Just use parent for now or implement animation
                 }
                 
-                // Simple animation:
-                Behavior on width { enabled: false } // Disable default behavior
-                NumberAnimation on width {
-                    id: progressAnim
-                    from: 328 // (360 - 32)
-                    to: 0
-                    duration: root.displayTime
-                    running: root.showing
-                }
-                
-                // Reset width when showing
+
                 onVisibleChanged: {
                     if (visible) {
                         width = 328
@@ -150,6 +145,10 @@ PanelWindow {
                     }
                 }
             }
+
+    property alias hovered: toastHandler.hovered
+    
+    // ... (existing code)
 
             MouseArea {
                 anchors.fill: parent
@@ -165,7 +164,10 @@ PanelWindow {
                          manager.closePopup()
                     }
                 }
-                HoverHandler { cursorShape: Qt.PointingHandCursor }
+                HoverHandler { 
+                    id: toastHandler
+                    cursorShape: Qt.PointingHandCursor 
+                }
             }
             
             RowLayout {
@@ -174,7 +176,7 @@ PanelWindow {
                 anchors.margins: 16
                 spacing: 16
                 
-                // Icon / Image
+
                 Rectangle {
                     Layout.preferredWidth: 48
                     Layout.preferredHeight: 48
@@ -206,7 +208,7 @@ PanelWindow {
                         visible: status === Image.Ready
                     }
                     
-                    // Fallback Icon
+
                     Text {
                         anchors.centerIn: parent
                         text: "󰂚"
@@ -217,7 +219,7 @@ PanelWindow {
                     }
                 }
                 
-                // Content
+
                 ColumnLayout {
                     Layout.fillWidth: true
                     spacing: 4
@@ -243,7 +245,7 @@ PanelWindow {
                     }
                 }
                 
-                // Close Button (Small X)
+
                 Rectangle {
                      Layout.alignment: Qt.AlignTop | Qt.AlignRight
                      width: 16

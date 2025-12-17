@@ -42,7 +42,7 @@ Rectangle {
             from: 0
             to: 1
             
-            // Scroll to change value
+
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.NoButton // Passthrough clicks to slider

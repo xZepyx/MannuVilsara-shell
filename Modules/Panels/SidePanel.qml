@@ -12,7 +12,7 @@ import "Views" as Views
 PanelWindow {
     id: root
     
-    // Position on the right side
+
     anchors {
         top: true
         bottom: true
@@ -27,15 +27,7 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.exclusiveZone: -1
     
-    // Removed redundant MouseArea/mask definitions as they were updated in previous step
-    // But need to make sure I don't leave duplicate blocks.
-    // The previous edit to SidePanel.qml replaced the timer block AND prepended the MouseArea/Mask logic.
-    // So I should check if I need to delete the old one.
-    // Ah, the previous `replace_file_content` targeted StartLine 117 endLine 141 (Timers) but inserted a huge block.
-    // Let me check if strict duplication happened.
-    // Actually, line 26-50 has the OLD MouseArea and mask logic. I need to remove that if I moved it down or update it there.
-    // I put the new logic near the top in the previous edit (lines 117+). Ideally mask logic should be near the top.
-    // I will remove the old mask logic at lines 26-50.
+
 
     
     Region {
@@ -67,21 +59,35 @@ PanelWindow {
             },
             // Static Peek Strips
             Region {
-                x: root.width - root.peekWidth
+                x: root.width - 20
                 y: controlBox.y
-                width: root.peekWidth
+                width: 20
                 height: controlBox.height
             },
             Region {
-                x: root.width - root.peekWidth
+                x: root.width - 20
                 y: notifBox.y
-                width: root.peekWidth
+                width: 20
                 height: notifBox.height
+            },
+            // Gap Bridge (Panel)
+            Region {
+                x: controlBox.x
+                y: controlBox.y + controlBox.height
+                width: controlBox.width
+                height: 12 // Spacing
+            },
+            // Gap Bridge (Peek)
+            Region {
+                x: root.width - 20
+                y: controlBox.y + controlBox.height
+                width: 20
+                height: 12
             }
         ]
     }
 
-    // Required properties
+
     required property var globalState
     required property var notifManager
     property alias theme: theme
@@ -105,19 +111,13 @@ PanelWindow {
         property int spacing:        12
     }
     
-    // --- Layout State ---
-    
-    // Peeking width
     readonly property int peekWidth: 10
-    // Full width of boxes
     readonly property int boxWidth: 320
     
-    // State trackers
     property bool forcedOpen: false
     property bool controlHovered: controlHandler.hovered || controlPeekHandler.hovered
     property bool notifHovered: notifHandler.hovered || notifPeekHandler.hovered
     
-    // Delayed closing to prevent jitter
     property bool controlOpen: false
     property bool notifOpen: false
     
@@ -135,10 +135,9 @@ PanelWindow {
         menuLoader.active = false
     }
 
-    // Mask logic
+    
     mask: (menuLoader.active || forcedOpen) ? fullMask : splitMask
     
-    // Background Closer (Modal)
     MouseArea {
         anchors.fill: parent
         z: -100
@@ -150,12 +149,16 @@ PanelWindow {
         }
     }
 
-    // De-bounce Timers
+
+    property bool toastHovered: false
+    
+    // ...
+
     Timer {
         id: controlTimer
         interval: 100
         repeat: false
-        running: !root.controlHovered && !menuLoader.active && !root.forcedOpen
+        running: !root.controlHovered && !menuLoader.active && !root.forcedOpen && !root.notifHovered && !root.toastHovered
         onTriggered: root.controlOpen = false
     }
     
@@ -163,14 +166,11 @@ PanelWindow {
         id: notifTimer
         interval: 100
         repeat: false
-        running: !root.notifHovered && !root.forcedOpen
+        running: !root.notifHovered && !root.forcedOpen && !root.controlHovered && !root.toastHovered
         onTriggered: root.notifOpen = false
     }
     
-    /* Auto-open (immediate) - removed to rely simply on bindings again? 
-       Actually, mixing explicit timers + bindings + forcedOpen is complex.
-       Let's stick to the timers being the "closer" and hover being the "opener".
-    */
+
     
     onControlHoveredChanged: {
         if (controlHovered) {
@@ -186,12 +186,12 @@ PanelWindow {
         }
     }
     
-    // Logic:
+
     function getX(isOpen) {
         return isOpen ? (root.width - root.boxWidth - 20) : (root.width - root.peekWidth)
     }
 
-    // --- Control Box (Top) ---
+
     Rectangle {
         id: controlBox
         width: root.boxWidth
@@ -209,7 +209,7 @@ PanelWindow {
         
         clip: true // Ensure content doesn't bleed during animation
         
-        // Shadow
+
         layer.enabled: true
         layer.effect: DropShadow {
             transparentBorder: true
@@ -258,8 +258,7 @@ PanelWindow {
                 active: false
                 visible: active
                 
-                // Animate height of the loader container? 
-                // Actually, controlBox height animates. This just needs to assert its height.
+
                 
                 sourceComponent: {
                     if (root.currentMenu === "wifi") return wifiComp
@@ -305,7 +304,7 @@ PanelWindow {
         }
     }
 
-    // Shared State for Menu
+
     property string currentMenu: ""
 
     function toggleMenu(menu) {
@@ -338,7 +337,7 @@ PanelWindow {
         }
     }
 
-    // --- Notification Box (Bottom) ---
+
     Rectangle {
         id: notifBox
         width: root.boxWidth
@@ -388,11 +387,7 @@ PanelWindow {
         }
     }
     
-    // --- Edge Peek Handlers (Static) ---
-    // Make them cover the right edge of the *screen* (parent)
-    // and extend slightly inwards to catch the hover.
-    
-    // Control Peek
+
     Rectangle {
         color: "transparent"
         x: parent.width - 20
@@ -418,7 +413,5 @@ PanelWindow {
         }
     }
     
-    // Update state trackers to include new static handlers
-    // property bool controlHovered: controlHandler.hovered || controlHeaderHandler.hovered || menuHandler.hovered
-    // property bool notifHovered: notifHandler.hovered || notifPeekHandler.hovered
+
 }

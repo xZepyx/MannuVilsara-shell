@@ -13,20 +13,22 @@ Item {
 
     required property Context context
     
-    // Notifications logic
+
     NotificationManager {
         id: notifManager
     }
 
     NotificationToast {
+        id: toast
         manager: notifManager
     }
 
-    // Panels
+
     SidePanel {
         id: sidePanel
         globalState: root.context.appState
         notifManager: notifManager
+        toastHovered: toast.hovered
     }
 
     WallpaperPanel {
@@ -45,7 +47,7 @@ Item {
         globalState: root.context.appState
     }
 
-    // Launcher & Clipboard
+
     AppLauncher {
         id: launcher
         colors: root.context.colors
@@ -58,7 +60,7 @@ Item {
         colors: root.context.colors
     }
     
-    // IPC Handlers - Co-located with the components they control
+
     IpcHandler {
         target: "launcher"
         function toggle() { root.context.appState.toggleLauncher(); }

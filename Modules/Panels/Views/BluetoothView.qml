@@ -16,7 +16,7 @@ Control {
     contentItem: ColumnLayout {
         spacing: 0
 
-        // --- Header ---
+
         RowLayout {
             Layout.fillWidth: true
             Layout.bottomMargin: 16
@@ -49,7 +49,7 @@ Control {
             
             Item { Layout.fillWidth: true }
             
-            // Toggle Switch
+
             Rectangle {
                 width: 44
                 height: 24

@@ -16,7 +16,7 @@ Control {
     contentItem: ColumnLayout {
         spacing: 0
 
-        // --- Header ---
+
         RowLayout {
             Layout.fillWidth: true
             Layout.bottomMargin: 16
@@ -49,7 +49,7 @@ Control {
             
             Item { Layout.fillWidth: true }
             
-            // Toggle Switch (Visual only for now)
+
             Rectangle {
                 width: 40
                 height: 20
@@ -67,9 +67,7 @@ Control {
             }
         }
 
-        // --- Network List ---
-        
-        // Current Network
+
         Rectangle {
             Layout.fillWidth: true
             implicitHeight: 64

@@ -6,7 +6,7 @@ import qs.Widgets
 import qs.Modules.Notifications
 import "." as Views
 
-// This component represents the "Top Box" - Controls & Profile
+
 ColumnLayout {
     id: root
     width: 320 // Fixed width for the panel
@@ -14,19 +14,19 @@ ColumnLayout {
 
     required property var globalState
     required property var theme
-    required property var notifManager // Passed but maybe not used heavily here? Actually Notifications are separate now.
+    required property var notifManager
 
     signal requestWifiMenu()
     signal requestBluetoothMenu()
     signal requestPowerMenu()
 
-    // --- Header Section (Profile & Power) ---
+
     RowLayout {
         Layout.fillWidth: true
         Layout.bottomMargin: 4
         spacing: 12
 
-        // Avatar
+
         Rectangle {
             Layout.preferredWidth: 42
             Layout.preferredHeight: 42
@@ -44,7 +44,7 @@ ColumnLayout {
             }
         }
 
-        // Greeting
+
         ColumnLayout {
             Layout.fillWidth: true
             spacing: 0
@@ -62,7 +62,7 @@ ColumnLayout {
             }
         }
 
-        // Power Button
+
         Rectangle {
             Layout.preferredWidth: 36
             Layout.preferredHeight: 36
@@ -85,14 +85,14 @@ ColumnLayout {
         }
     }
 
-    // --- Quick Settings Grid ---
+
     GridLayout {
         Layout.fillWidth: true
         columns: 2
         rowSpacing: 10
         columnSpacing: 10
 
-        // WiFi
+
         Views.ToggleButton {
             Layout.fillWidth: true
             implicitHeight: 64
@@ -117,7 +117,7 @@ ColumnLayout {
             }
         }
 
-        // Bluetooth
+
         Views.ToggleButton {
             Layout.fillWidth: true
             implicitHeight: 64
@@ -142,7 +142,7 @@ ColumnLayout {
             }
         }
         
-        // Airplane
+
         Views.ToggleButton {
             Layout.fillWidth: true
             implicitHeight: 56
@@ -154,7 +154,7 @@ ColumnLayout {
             theme: root.theme
         }
 
-        // DND
+
         Views.ToggleButton {
             Layout.fillWidth: true
             implicitHeight: 56
@@ -167,7 +167,7 @@ ColumnLayout {
         }
     }
 
-    // --- Sliders ---
+
     ColumnLayout {
         Layout.fillWidth: true
         spacing: 12
