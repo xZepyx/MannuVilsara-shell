@@ -1,5 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
+import Quickshell
+import Quickshell.Io
 import Quickshell.Hyprland
 import "../../core"
 
@@ -70,6 +72,42 @@ Rectangle {
         }
 
         VerticalDivider {}
+
+          // Info Panel Button
+        Rectangle {
+            Layout.preferredHeight: 26
+            Layout.preferredWidth: 26
+            radius: height / 2
+            color: "transparent"
+            border.color: colors.muted
+            border.width: 1
+            
+            Text {
+                anchors.centerIn: parent
+                text: "󰃰"
+                font.pixelSize: 16
+                font.family: "Symbols Nerd Font"
+                color: colors.blue
+            }
+            
+            Process {
+                id: infoPanelIpcProcess
+                command: ["quickshell", "ipc", "-c", "mannu", "call", "infopanel", "toggle"]
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+                
+                onEntered: parent.color = Qt.rgba(colors.blue.r, colors.blue.g, colors.blue.b, 0.2)
+                onExited: parent.color = "transparent"
+                
+                onClicked: {
+                    infoPanelIpcProcess.running = true
+                }
+            }
+        }
 
         // --- WORKSPACE CAROUSEL ---
         Rectangle {
@@ -258,7 +296,43 @@ Rectangle {
             }
         }
 
-        // Clock
+        // Wallpaper Selector
+        Rectangle {
+            Layout.preferredHeight: 26
+            Layout.preferredWidth: 26
+            radius: height / 2
+            color: "transparent"
+            border.color: colors.muted
+            border.width: 1
+            
+            Text {
+                anchors.centerIn: parent
+                text: "󰸉"
+                font.pixelSize: 16
+                font.family: "Symbols Nerd Font"
+                color: colors.fg
+            }
+            
+            Process {
+                id: wallpaperIpcProcess
+                command: ["quickshell", "ipc", "-c", "mannu", "call", "wallpaperpanel", "toggle"]
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+                
+                onEntered: parent.color = Qt.rgba(colors.purple.r, colors.purple.g, colors.purple.b, 0.2)
+                onExited: parent.color = "transparent"
+                
+                onClicked: {
+                    wallpaperIpcProcess.running = true
+                }
+            }
+        }
+
+         // Clock
         Rectangle {
             Layout.preferredHeight: 26
             Layout.preferredWidth: clockText.implicitWidth + 24
@@ -274,5 +348,46 @@ Rectangle {
                 font.bold: true
             }
         }
+
+      
+
+        // Power Menu Button
+        Rectangle {
+            Layout.preferredHeight: 26
+            Layout.preferredWidth: 26
+            radius: height / 2
+            color: "transparent"
+            border.color: colors.muted
+            border.width: 1
+            
+            Text {
+                anchors.centerIn: parent
+                text: "⏻"
+                font.pixelSize: 16
+                font.family: "Symbols Nerd Font"
+                color: colors.red
+            }
+            
+            Process {
+                id: powerMenuIpcProcess
+                command: ["quickshell", "ipc", "-c", "mannu", "call", "powermenu", "toggle"]
+            }
+            
+            MouseArea {
+                anchors.fill: parent
+                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true
+                
+                onEntered: parent.color = Qt.rgba(colors.red.r, colors.red.g, colors.red.b, 0.2)
+                onExited: parent.color = "transparent"
+                
+                onClicked: {
+                    powerMenuIpcProcess.running = true
+                }
+            }
+        }
+        
+
+       
     }
 }

@@ -72,6 +72,20 @@ ShellRoot {
         globalState: appState
         notifManager: notifManager
     }
+
+    WallpaperPanel {
+        globalState: appState
+    }
+
+    PowerMenu {
+        isOpen: appState.powerMenuOpen
+        globalState: appState
+    }
+
+    InfoPanel {
+        globalState: appState
+    }
+
     // --- Background (Wallpaper) ---
     Background {}
 
@@ -117,6 +131,30 @@ ShellRoot {
         target: "sidePanel"
         function toggle() {
             appState.toggleSidePanel();
+        }
+    }
+
+    // Wallpaper Panel Toggle
+    IpcHandler {
+        target: "wallpaperpanel"
+        function toggle() {
+            appState.toggleWallpaperPanel();
+        }
+    }
+
+    // Power Menu Toggle
+    IpcHandler {
+        target: "powermenu"
+        function toggle() {
+            appState.togglePowerMenu();
+        }
+    }
+
+    // Info Panel Toggle
+    IpcHandler {
+        target: "infopanel"
+        function toggle() {
+            appState.toggleInfoPanel();
         }
     }
 

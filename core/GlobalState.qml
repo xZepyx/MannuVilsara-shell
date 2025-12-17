@@ -7,6 +7,10 @@ QtObject {
     property bool launcherOpen: false
     property bool clipboardOpen: false
     property bool sidePanelOpen: false
+    property bool wallpaperPanelOpen: false
+    property bool powerMenuOpen: false
+    property bool infoPanelOpen: false
+    
     // --- Actions ---
     function toggleLauncher() {
         if (launcherOpen) {
@@ -37,9 +41,39 @@ QtObject {
         }
     }
 
+    function toggleWallpaperPanel() {
+        if (wallpaperPanelOpen) {
+            wallpaperPanelOpen = false;
+        } else {
+            closeAll();
+            wallpaperPanelOpen = true;
+        }
+    }
+
+    function togglePowerMenu() {
+        if (powerMenuOpen) {
+            powerMenuOpen = false;
+        } else {
+            closeAll();
+            powerMenuOpen = true;
+        }
+    }
+
+    function toggleInfoPanel() {
+        if (infoPanelOpen) {
+            infoPanelOpen = false;
+        } else {
+            closeAll();
+            infoPanelOpen = true;
+        }
+    }
+
     function closeAll() {
         launcherOpen = false;
         clipboardOpen = false;
         sidePanelOpen = false;
+        wallpaperPanelOpen = false;
+        powerMenuOpen = false;
+        infoPanelOpen = false;
     }
 }
