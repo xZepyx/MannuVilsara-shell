@@ -9,8 +9,10 @@ Rectangle {
     
     property string label: ""
     property string icon: ""
-    property alias value: slider.value
+    property real value: 0
     required property var theme
+    
+    signal changeRequested(real newValue)
 
     radius: 12
     color: theme.surface
@@ -42,18 +44,25 @@ Rectangle {
             from: 0
             to: 1
             
+            // Emit change on interaction
+            onMoved: root.changeRequested(value)
+
+            // Robust binding to external value (restored when not pressed)
+            Binding on value {
+                value: root.value
+                when: !slider.pressed
+                restoreMode: Binding.RestoreBinding
+            }
 
             MouseArea {
                 anchors.fill: parent
                 acceptedButtons: Qt.NoButton // Passthrough clicks to slider
-                cursorShape: Qt.PointingHandCursor // Move cursor to here
                 
                 onWheel: (wheel) => {
-                    if (wheel.angleDelta.y > 0) {
-                        slider.value = Math.min(slider.to, slider.value + 0.05)
-                    } else {
-                        slider.value = Math.max(slider.from, slider.value - 0.05)
-                    }
+                    var step = 0.05
+                    var next = (wheel.angleDelta.y > 0) ? slider.value + step : slider.value - step
+                    next = Math.max(0, Math.min(1, next))
+                    root.changeRequested(next)
                 }
             }
             

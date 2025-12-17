@@ -11,7 +11,6 @@ Item {
     property alias os: osService
     property alias mem: memService
     property alias disk: diskService
-    property alias volume: volumeService
     property alias time: timeService
     property alias activeWindow: activeWindowService
     property alias layout: layoutService
@@ -22,7 +21,6 @@ Item {
     OsService { id: osService }
     MemService { id: memService }
     DiskService { id: diskService }
-    VolumeService { id: volumeService }
     TimeService { id: timeService }
     ActiveWindowService { id: activeWindowService }
     LayoutService { id: layoutService }

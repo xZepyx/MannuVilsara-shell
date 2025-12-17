@@ -4,6 +4,7 @@ import QtQuick.Controls
 import Quickshell
 import qs.Widgets
 import qs.Modules.Notifications
+import qs.Services
 import "." as Views
 
 
@@ -176,15 +177,17 @@ ColumnLayout {
         Views.SliderControl {
             label: "Volume"
             icon: "󰕾"
-            value: 0.65
+            value: VolumeService.volume
             theme: root.theme
+            onChangeRequested: (v) => VolumeService.setVolume(v)
         }
 
         Views.SliderControl {
             label: "Brightness"
             icon: "󰃠"
-            value: 0.80
+            value: BrightnessService.brightness
             theme: root.theme
+            onChangeRequested: (v) => BrightnessService.setBrightness(v)
         }
     }
 }
