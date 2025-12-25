@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import qs.Core
-import "../../../../Services" // Ensure this path points to where CpuService.qml is located
+import "../../../../Services" 
 
 ColumnLayout {
     id: root
@@ -12,9 +12,12 @@ ColumnLayout {
     spacing: 12
 
     // --- Services Instantiation ---
-    // We create an instance here because CpuService is not a Singleton
     CpuService {
         id: cpuService
+    }
+
+    MemService {
+        id: memService
     }
 
     // Header
@@ -37,26 +40,58 @@ ColumnLayout {
             label: "CPU"
             icon: "󰻠"
             iconColor: theme.urgent
-            // Bind directly to the service instance
-            valueText: cpuService.usage + "%"
-            progress: cpuService.usage / 100
+            valueText: cpuService.usage > 0 ? cpuService.usage + "%" : "Loading..."
+            progress: cpuService.usage > 0 ? (cpuService.usage / 100) : 0
         }
 
         // 2. RAM Resource
-        // Assuming MemService is still available globally or via qs.Services.
-        // If MemService is also not a singleton, you need to instantiate it like CpuService above.
         ResourceItem {
             label: "RAM"
             icon: "󰍛"
             iconColor: theme.accent
-            // Safety check in case MemService is missing/loading
-            valueText: (typeof MemService !== "undefined" ? 
-                       (Math.round(MemService.used / 1024 / 1024 / 1024 * 10) / 10) : 0) + " GB"
-            progress: (typeof MemService !== "undefined" ? 
-                      (MemService.used / MemService.total) : 0)
+            valueText: {
+                // Check if we have valid data
+                if (!memService.total || memService.total <= 0) {
+                    // Check if at least percentage is available
+                    if (memService.usage && memService.usage > 0) {
+                        return memService.usage + "%";
+                    }
+                    return "Loading...";
+                }
+                
+                // Calculate GB values
+                var usedGb = memService.used / 1073741824;
+                var totalGb = memService.total / 1073741824;
+                
+                // Safety check for NaN
+                if (isNaN(usedGb) || isNaN(totalGb) || totalGb <= 0) {
+                    return "N/A";
+                }
+                
+                // Format with one decimal place
+                return usedGb.toFixed(1) + " / " + totalGb.toFixed(1) + " GB";
+            }
+            progress: {
+                // If total is not available, use percentage
+                if (!memService.total || memService.total <= 0) {
+                    if (memService.usage && memService.usage > 0) {
+                        return memService.usage / 100;
+                    }
+                    return 0;
+                }
+                
+                // Calculate progress from used/total
+                var p = memService.used / memService.total;
+                
+                // Safety bounds
+                if (isNaN(p) || p < 0) return 0;
+                if (p > 1) return 1;
+                
+                return p;
+            }
         }
 
-        // 3. SSD Resource (Mock data for now)
+        // 3. SSD Resource (Mock data for now - you can replace with actual disk service)
         ResourceItem {
             label: "SSD"
             icon: "󰋊"
@@ -64,6 +99,16 @@ ColumnLayout {
             valueText: "24%"
             progress: 0.24
         }
+    }
+
+    // Debug info (optional - remove in production)
+    Text {
+        text: "Debug: RAM Total=" + memService.total + " Used=" + memService.used + " Usage=" + memService.usage + "%"
+        font.pixelSize: 9
+        color: theme.fg
+        opacity: 0.5
+        Layout.leftMargin: 4
+        visible: false // Set to true for debugging
     }
 
     // --- Reusable Component ---
@@ -130,7 +175,7 @@ ColumnLayout {
                         height: parent.height
                         radius: parent.radius
                         color: iconColor
-                        width: parent.width * progress
+                        width: parent.width * Math.max(0, Math.min(1, progress))
 
                         // Smooth animation when values change
                         Behavior on width {
