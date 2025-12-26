@@ -18,26 +18,20 @@ Item {
 
         // Capture stdout as it comes in
         stdout: SplitParser {
-            onRead: (data) => {
-                console.log("[MemService] stdout received:", JSON.stringify(data));
-                
+            onRead: (data) => {                
                 if (!data) {
                     console.log("[MemService] No data received");
                     return;
                 }
                 
-                var output = data.trim();
-                console.log("[MemService] Trimmed output:", JSON.stringify(output));
-                
+                var output = data.trim();                
                 if (output === "") {
                     console.log("[MemService] Empty output after trim");
                     return;
                 }
                 
                 // Split by whitespace
-                var parts = output.split(/\s+/);
-                console.log("[MemService] Split into", parts.length, "parts:", JSON.stringify(parts));
-                
+                var parts = output.split(/\s+/);                
                 if (parts.length < 2) {
                     console.log("[MemService] Not enough parts");
                     return;
@@ -45,9 +39,7 @@ Item {
                 
                 var totalBytes = parseInt(parts[0]);
                 var usedBytes = parseInt(parts[1]);
-                
-                console.log("[MemService] Parsed - totalBytes:", totalBytes, "usedBytes:", usedBytes);
-                
+                                
                 if (isNaN(totalBytes) || isNaN(usedBytes) || totalBytes <= 0) {
                     console.log("[MemService] Invalid values");
                     return;
@@ -57,18 +49,16 @@ Item {
                 total = totalBytes;
                 used = usedBytes;
                 usage = Math.round((usedBytes / totalBytes) * 100);
-                
-                console.log("[MemService] SUCCESS - Total:", (total/1073741824).toFixed(2), "GB, Used:", (used/1073741824).toFixed(2), "GB, Usage:", usage + "%");
-            }
+                            }
         }
 
-        onExited: (code) => {
-            console.log("[MemService] Process exited with code:", code);
-        }
+        // onExited: (code) => {
+        //     console.log("[MemService] Process exited with code:", code);
+        // }
 
-        onStarted: {
-            console.log("[MemService] Process started");
-        }
+        // onStarted: {
+        //     console.log("[MemService] Process started");
+        // }
     }
 
     Timer {
@@ -77,7 +67,6 @@ Item {
         repeat: true
         triggeredOnStart: true
         onTriggered: {
-            console.log("[MemService] Timer tick - triggering memory check");
             memProc.running = true;
         }
     }
