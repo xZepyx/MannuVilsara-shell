@@ -62,6 +62,11 @@ Singleton {
             root.wallpaperChanged(screenName, path);
 
         console.log("[WallpaperService] Set wallpaper for", screenName, "to", path);
+        
+        // Copy to fixed path for fast loading
+        wallpaperCopier.command = ["cp", path, Quickshell.env("HOME") + "/.cache/mannu/current_wallpaper"];
+        wallpaperCopier.running = true;
+        
         generateColors(path);
     }
 
@@ -158,6 +163,18 @@ Singleton {
                 console.error("[WallpaperService] Try running manually: openrgb --list-devices");
             } else {
                 console.log("[WallpaperService] OpenRGB updated successfully");
+            }
+        }
+    }
+
+    Process {
+        id: wallpaperCopier
+        running: false
+        onExited: (code, status) => {
+            if (code === 0) {
+                console.log("[WallpaperService] Current wallpaper copied to cache");
+            } else {
+                console.error("[WallpaperService] Failed to copy wallpaper:", code);
             }
         }
     }
