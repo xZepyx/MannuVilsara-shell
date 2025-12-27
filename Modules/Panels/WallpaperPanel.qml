@@ -67,7 +67,15 @@ PanelWindow {
                 updateWallpaperData();
                 searchInput.text = "";
                 filterText = "";
-                searchInput.forceActiveFocus();
+                
+                // Select current wallpaper
+                var idx = filteredWallpapers.indexOf(currentWallpaper);
+                if (idx !== -1) {
+                    wallpaperGrid.currentIndex = idx;
+                    wallpaperGrid.positionViewAtIndex(idx, GridView.Center);
+                }
+                
+                wallpaperGrid.forceActiveFocus();
             } else {
                 internalOpen = false;
                 closeTimer.restart();
@@ -122,8 +130,17 @@ PanelWindow {
 
         width: Math.min(900, parent.width - 40)
         height: 500
-        x: (parent.width - width) / 2
-        y: root.internalOpen ? (parent.height - height - 20) : parent.height
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.bottom: parent.bottom
+        
+        property real offset: root.internalOpen ? 20 : -height
+        Behavior on offset {
+            NumberAnimation {
+                duration: 400
+                easing.type: Easing.OutExpo
+            }
+        }
+        anchors.bottomMargin: offset
         color: theme.bg
         radius: 16
         border.color: theme.muted
@@ -195,7 +212,6 @@ PanelWindow {
                             Keys.onDownPressed: {
                                 if (wallpaperGrid.count > 0) {
                                     wallpaperGrid.forceActiveFocus();
-                                    wallpaperGrid.currentIndex = 0;
                                 }
                             }
                             Keys.onEscapePressed: globalState.wallpaperPanelOpen = false
@@ -286,6 +302,12 @@ PanelWindow {
                         globalState.wallpaperPanelOpen = false;
                     }
                 }
+                Keys.onPressed: (event) => {
+                    if (event.text === "/") {
+                        searchInput.forceActiveFocus();
+                        event.accepted = true;
+                    }
+                }
                 Keys.onEscapePressed: globalState.wallpaperPanelOpen = false
 
                 highlight: Rectangle {
@@ -314,10 +336,23 @@ PanelWindow {
 
                         Image {
                             id: wImage
-
+                            
+                            readonly property string fileName: modelData.split('/').pop()
+                            readonly property string thumbSource: "file://" + WallpaperService.previewDirectory + "/" + fileName
+                            readonly property string originalSource: "file://" + modelData
+                            
                             anchors.fill: parent
                             anchors.margins: 4
-                            source: "file://" + modelData
+                            
+                            // Try thumbnail first, fallback to original
+                            source: thumbSource
+                            
+                            onStatusChanged: {
+                                if (status === Image.Error && source !== originalSource) {
+                                    source = originalSource;
+                                }
+                            }
+                            
                             fillMode: Image.PreserveAspectCrop
                             asynchronous: true
                             sourceSize.width: 300
@@ -382,13 +417,7 @@ PanelWindow {
 
         }
 
-        Behavior on y {
-            NumberAnimation {
-                duration: 400
-                easing.type: Easing.OutExpo
-            }
 
-        }
 
         layer.effect: DropShadow {
             transparentBorder: true

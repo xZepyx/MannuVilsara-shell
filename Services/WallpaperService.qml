@@ -89,8 +89,15 @@ Singleton {
         return [];
     }
 
+    property string previewDirectory: Quickshell.env("HOME") + "/.cache/mannu/wallpreviews"
+
     function refreshWallpapersList() {
         console.log("[WallpaperService] Refreshing wallpapers list");
+        
+        // Trigger thumbnail generation
+        thumbnailGenerator.command = ["python3", "/etc/xdg/quickshell/mannu/Scripts/generate_previews.py", root.defaultDirectory, root.previewDirectory];
+        thumbnailGenerator.running = true;
+        
         scanningCount = 0;
         for (var i = 0; i < wallpaperScanners.count; i++) {
             var scanner = wallpaperScanners.objectAt(i);
@@ -121,6 +128,18 @@ Singleton {
                 Qt.callLater(applyOpenRGB);
             } else {
                 console.error("[WallpaperService] Matugen failed with code:", code);
+            }
+        }
+    }
+
+    Process {
+        id: thumbnailGenerator
+        running: false
+        onExited: (code, status) => {
+            if (code === 0) {
+                console.log("[WallpaperService] Thumbnails generated successfully");
+            } else {
+                console.error("[WallpaperService] Thumbnail generation failed:", code);
             }
         }
     }
