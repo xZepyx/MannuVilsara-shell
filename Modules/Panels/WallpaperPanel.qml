@@ -347,6 +347,11 @@ PanelWindow {
                             // Try thumbnail first, fallback to original
                             source: thumbSource
                             
+                            opacity: status === Image.Ready ? 1 : 0
+                            Behavior on opacity {
+                                NumberAnimation { duration: 300; easing.type: Easing.OutQuad }
+                            }
+                            
                             onStatusChanged: {
                                 if (status === Image.Error && source !== originalSource) {
                                     source = originalSource;
