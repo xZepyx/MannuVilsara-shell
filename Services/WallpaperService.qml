@@ -2,6 +2,7 @@ import Qt.labs.folderlistmodel
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Core
 import qs.Services
 pragma Singleton
 
@@ -25,7 +26,7 @@ Singleton {
     signal wallpaperListChanged(string screenName, int count)
 
     function init() {
-        console.log("[WallpaperService] Starting service");
+        Logger.i("Wallpaper", "Starting service");
         dirCreator.running = true;
         Qt.callLater(loadFromCache);
         Qt.callLater(refreshWallpapersList);
@@ -54,7 +55,7 @@ Singleton {
             return ;
 
         if (screenName === undefined) {
-            console.log("[WallpaperService] No screen specified");
+            Logger.w("Wallpaper", "No screen specified");
             return ;
         }
         var oldPath = currentWallpapers[screenName] || "";
@@ -63,7 +64,7 @@ Singleton {
         if (oldPath !== path)
             root.wallpaperChanged(screenName, path);
 
-        console.log("[WallpaperService] Set wallpaper for", screenName, "to", path);
+        Logger.d("Wallpaper", "Set wallpaper for", screenName, "to", path);
         // Copy to fixed path for fast loading
         wallpaperCopier.command = ["cp", path, Quickshell.env("HOME") + "/.cache/mannu/current_wallpaper"];
         wallpaperCopier.running = true;
@@ -77,7 +78,7 @@ Singleton {
         var cachePath = colorsCacheFile;
         var logPath = Quickshell.env("HOME") + "/.cache/mannu/matugen.log";
         var cmd = "/usr/bin/matugen image '" + path + "' -j hex > '" + cachePath + "' 2> '" + logPath + "'";
-        console.log("[WallpaperService] Generating colors:", cmd);
+        Logger.d("Wallpaper", "Generating colors:", cmd);
         matugenProcess.command = ["sh", "-c", cmd];
         matugenProcess.running = true;
     }
@@ -96,7 +97,7 @@ Singleton {
     }
 
     function refreshWallpapersList() {
-        console.log("[WallpaperService] Refreshing wallpapers list");
+        Logger.d("Wallpaper", "Refreshing wallpapers list");
         // Trigger thumbnail generation
         thumbnailGenerator.command = ["python3", "/etc/xdg/quickshell/mannu/Scripts/generate_previews.py", root.defaultDirectory, root.previewDirectory];
         thumbnailGenerator.running = true;
@@ -130,11 +131,11 @@ Singleton {
         running: false
         onExited: (code, status) => {
             if (code === 0) {
-                console.log("[WallpaperService] Matugen finished successfully");
+                Logger.d("Wallpaper", "Matugen finished successfully");
                 // Wait a moment for file to be written, then apply OpenRGB
                 Qt.callLater(applyOpenRGB);
             } else {
-                console.error("[WallpaperService] Matugen failed with code:", code);
+                Logger.e("Wallpaper", "Matugen failed with code:", code);
             }
         }
     }
@@ -145,9 +146,9 @@ Singleton {
         running: false
         onExited: (code, status) => {
             if (code === 0)
-                console.log("[WallpaperService] Thumbnails generated successfully");
+                Logger.d("Wallpaper", "Thumbnails generated successfully");
             else
-                console.error("[WallpaperService] Thumbnail generation failed:", code);
+                Logger.e("Wallpaper", "Thumbnail generation failed:", code);
         }
     }
 
@@ -156,14 +157,14 @@ Singleton {
 
         running: false
         onStarted: {
-            console.log("[WallpaperService] OpenRGB command:", command.join(" "));
+            Logger.d("Wallpaper", "OpenRGB command:", command.join(" "));
         }
         onExited: (code, status) => {
             if (code !== 0) {
-                console.error("[WallpaperService] OpenRGB failed with code:", code);
-                console.error("[WallpaperService] Try running manually: openrgb --list-devices");
+                Logger.e("Wallpaper", "OpenRGB failed with code:", code);
+                Logger.e("Wallpaper", "Try running manually: openrgb --list-devices");
             } else {
-                console.log("[WallpaperService] OpenRGB updated successfully");
+                Logger.d("Wallpaper", "OpenRGB updated successfully");
             }
         }
     }
@@ -174,9 +175,9 @@ Singleton {
         running: false
         onExited: (code, status) => {
             if (code === 0)
-                console.log("[WallpaperService] Current wallpaper copied to cache");
+                Logger.d("Wallpaper", "Current wallpaper copied to cache");
             else
-                console.error("[WallpaperService] Failed to copy wallpaper:", code);
+                Logger.e("Wallpaper", "Failed to copy wallpaper:", code);
         }
     }
 
@@ -185,7 +186,7 @@ Singleton {
 
         path: ""
         onLoaded: {
-            console.log("[WallpaperService] Colors file loaded, extracting color...");
+            Logger.d("Wallpaper", "Colors file loaded, extracting color...");
             try {
                 var colors = colorsAdapter.colors;
                 var selectedColor = null;
@@ -199,8 +200,7 @@ Singleton {
                 }
                 if (selectedColor) {
                     var hex = selectedColor.toString().replace("#", "");
-                    console.log("[WallpaperService] Applying OpenRGB color (Source/Accent):", hex);
-                    
+                    Logger.d("Wallpaper", "Applying OpenRGB color (Source/Accent):", hex);
                     var args = ["openrgb"];
                     var devices = Config.openRgbDevices;
                     for (var i = 0; i < devices.length; i++) {
@@ -209,20 +209,19 @@ Singleton {
                         args.push("--color");
                         args.push(hex);
                     }
-                    
                     keyboardRgb.command = args;
                     keyboardRgb.running = true;
                 } else {
-                    console.error("[WallpaperService] Could not extract color from colors.json");
-                    console.log("[WallpaperService] JSON keys:", JSON.stringify(Object.keys(colors || {
+                    Logger.e("Wallpaper", "Could not extract color from colors.json");
+                    Logger.d("Wallpaper", "JSON keys:", JSON.stringify(Object.keys(colors || {
                     })));
                 }
             } catch (e) {
-                console.error("[WallpaperService] Error parsing colors:", e);
+                Logger.e("Wallpaper", "Error parsing colors:", e);
             }
         }
         onLoadFailed: (error) => {
-            console.error("[WallpaperService] Failed to load colors file:", error);
+            Logger.e("Wallpaper", "Failed to load colors file:", error);
         }
 
         adapter: JsonAdapter {
@@ -245,17 +244,17 @@ Singleton {
             root.currentWallpapers = wallpaperCacheAdapter.wallpapers || {
             };
             root.defaultWallpaper = wallpaperCacheAdapter.defaultWallpaper || "";
-            console.log("[WallpaperService] Loaded wallpapers from cache:", Object.keys(root.currentWallpapers).length, "screens");
+            Logger.i("Wallpaper", "Loaded wallpapers from cache:", Object.keys(root.currentWallpapers).length, "screens");
             var screens = Object.keys(root.currentWallpapers);
             if (screens.length > 0) {
                 var first = root.currentWallpapers[screens[0]];
-                console.log("[WallpaperService] Generating initial colors from:", first);
+                Logger.d("Wallpaper", "Generating initial colors from:", first);
                 generateColors(first);
             }
             root.isInitialized = true;
         }
         onLoadFailed: (error) => {
-            console.log("[WallpaperService] Cache not found, starting fresh");
+            Logger.d("Wallpaper", "Cache not found, starting fresh");
             root.currentWallpapers = {
             };
             root.isInitialized = true;
@@ -280,7 +279,7 @@ Singleton {
             wallpaperCacheAdapter.wallpapers = root.currentWallpapers;
             wallpaperCacheAdapter.defaultWallpaper = root.defaultWallpaper;
             wallpaperCacheView.writeAdapter();
-            console.log("[WallpaperService] Saved wallpapers to cache");
+            Logger.d("Wallpaper", "Saved wallpapers to cache");
         }
     }
 
@@ -314,7 +313,7 @@ Singleton {
                     }
                     root.wallpaperLists[screenName] = files;
                     scanningCount--;
-                    console.log("[WallpaperService] Refreshed:", screenName, "count:", files.length);
+                    Logger.d("Wallpaper", "Refreshed:", screenName, "count:", files.length);
                     root.wallpaperListChanged(screenName, files.length);
                 }
             }

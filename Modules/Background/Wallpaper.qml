@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
+import qs.Core
 import qs.Services
 
 Item {
@@ -13,7 +14,9 @@ Item {
     property string screenName: screen ? screen.name : ""
 
     function applyTransition(newImage, oldImage) {
-        console.log("[Wallpaper] 🎬 STARTING TRANSITION TYPE", transitionType);
+        // Logger.d("Wallpaper", "Transition complete!");
+
+        // Logger.d("Wallpaper", "Starting transition type", transitionType);
         var w = root.width;
         var h = root.height;
         oldImage.opacity = 1;
@@ -22,7 +25,7 @@ Item {
         switch (transitionType) {
         case 0:
             // Smooth Fade - Classic crossfade
-            console.log("[Wallpaper] ➡️ Applying FADE transition");
+            // Logger.d("Wallpaper", "Applying FADE transition");
             newImage.x = 0;
             newImage.y = 0;
             newImage.scale = 1;
@@ -31,7 +34,7 @@ Item {
             break;
         case 1:
             // Slide Left - Push from right
-            console.log("[Wallpaper] ➡️ Applying SLIDE LEFT transition");
+            Logger.d("Wallpaper", "Applying SLIDE LEFT transition");
             newImage.x = w * 1.2; // Start further off-screen
             newImage.y = 0;
             newImage.scale = 1;
@@ -41,7 +44,7 @@ Item {
             break;
         case 2:
             // Slide Up - Push from bottom
-            console.log("[Wallpaper] ⬆️ Applying SLIDE UP transition");
+            Logger.d("Wallpaper", "Applying SLIDE UP transition");
             newImage.x = 0;
             newImage.y = h * 1.2; // Start further off-screen
             newImage.scale = 1;
@@ -51,7 +54,7 @@ Item {
             break;
         case 3:
             // Zoom In - Scale up fade
-            console.log("[Wallpaper] 🔍 Applying ZOOM IN transition");
+            Logger.d("Wallpaper", "Applying ZOOM IN transition");
             newImage.x = 0;
             newImage.y = 0;
             newImage.scale = 1.6;
@@ -61,7 +64,7 @@ Item {
             break;
         case 4:
             // Cube Effect - Compiz style
-            console.log("[Wallpaper] 🎲 Applying CUBE transition");
+            Logger.d("Wallpaper", "Applying CUBE transition");
             newImage.x = w * 1.1;
             newImage.y = 0;
             newImage.scale = 0.85;
@@ -72,7 +75,7 @@ Item {
             break;
         case 5:
             // Glide - Diagonal movement
-            console.log("[Wallpaper] ✈️ Applying GLIDE transition");
+            Logger.d("Wallpaper", "Applying GLIDE transition");
             newImage.x = 0;
             newImage.y = -h * 0.3;
             newImage.scale = 1.15;
@@ -83,7 +86,7 @@ Item {
             break;
         case 6:
             // Rotate & Scale - Dynamic spin
-            console.log("[Wallpaper] 🔄 Applying ROTATE transition");
+            Logger.d("Wallpaper", "Applying ROTATE transition");
             newImage.x = 0;
             newImage.y = 0;
             newImage.scale = 0.5;
@@ -94,7 +97,7 @@ Item {
             break;
         case 7:
             // Flip - Card flip effect (horizontal flip simulation)
-            console.log("[Wallpaper] 🃏 Applying FLIP transition");
+            Logger.d("Wallpaper", "Applying FLIP transition");
             newImage.x = 0;
             newImage.y = 0;
             newImage.scale = 0.05; // Very small to simulate flip
@@ -105,7 +108,7 @@ Item {
             break;
         case 8:
             // Slide Right - Reverse push
-            console.log("[Wallpaper] ⬅️ Applying SLIDE RIGHT transition");
+            Logger.d("Wallpaper", "Applying SLIDE RIGHT transition");
             newImage.x = -w * 1.2;
             newImage.y = 0;
             newImage.scale = 1;
@@ -115,7 +118,7 @@ Item {
             break;
         case 9:
             // Zoom & Slide - Combined effect
-            console.log("[Wallpaper] 🎯 Applying ZOOM & SLIDE transition");
+            Logger.d("Wallpaper", "Applying ZOOM & SLIDE transition");
             newImage.x = w * 0.3;
             newImage.y = 0;
             newImage.scale = 0.7;
@@ -126,7 +129,7 @@ Item {
             break;
         case 10:
             // Diagonal Slide - Corner movement
-            console.log("[Wallpaper] ↗️ Applying DIAGONAL transition");
+            Logger.d("Wallpaper", "Applying DIAGONAL transition");
             newImage.x = w * 0.5;
             newImage.y = h * 1.1;
             newImage.scale = 0.9;
@@ -138,7 +141,7 @@ Item {
             break;
         case 11:
             // Expand - Center to full
-            console.log("[Wallpaper] 📐 Applying EXPAND transition");
+            Logger.d("Wallpaper", "Applying EXPAND transition");
             newImage.x = 0;
             newImage.y = 0;
             newImage.scale = 0.4;
@@ -148,7 +151,7 @@ Item {
             break;
         case 12:
             // Spin Out - Rotating exit
-            console.log("[Wallpaper] 🌀 Applying SPIN transition");
+            Logger.d("Wallpaper", "Applying SPIN transition");
             newImage.x = 0;
             newImage.y = 0;
             newImage.scale = 0.3;
@@ -159,7 +162,7 @@ Item {
             break;
         case 13:
             // Slide Down - Top to bottom
-            console.log("[Wallpaper] ⬇️ Applying SLIDE DOWN transition");
+            Logger.d("Wallpaper", "Applying SLIDE DOWN transition");
             newImage.x = 0;
             newImage.y = -h * 1.2;
             newImage.scale = 1;
@@ -169,7 +172,7 @@ Item {
             break;
         case 14:
             // Cinematic Zoom - Movie-style
-            console.log("[Wallpaper] 🎬 Applying CINEMATIC transition");
+            Logger.d("Wallpaper", "Applying CINEMATIC transition");
             newImage.x = 0;
             newImage.y = 0;
             newImage.scale = 1.3;
@@ -182,52 +185,39 @@ Item {
         img1Container.z = (newImage === img1) ? 2 : 1;
         img2Container.z = (newImage === img2) ? 2 : 1;
         root.currentImage = newImage;
-        console.log("[Wallpaper] 🎭 Animating to final state...");
+        // Logger.d("Wallpaper", "Animating to final state...");
         newImage.opacity = 1;
         newImage.scale = 1;
         newImage.x = 0;
         newImage.y = 0;
         newImage.rotation = 0;
         oldImage.opacity = 0;
-        Qt.callLater(function() {
-            setTimeout(function() {
-                oldImage.scale = 1;
-                oldImage.x = 0;
-                oldImage.y = 0;
-                oldImage.rotation = 0;
-                console.log("[Wallpaper] ✅ Transition complete!");
-            }, 1000);
-        });
-    }
-
-    function setTimeout(callback, delay) {
-        var timer = Qt.createQmlObject("import QtQuick; Timer {}", root);
-        timer.interval = delay;
-        timer.repeat = false;
-        timer.triggered.connect(function() {
-            callback();
-            timer.destroy();
-        });
-        timer.start();
+        transitionTimer.callback = function() {
+            oldImage.scale = 1;
+            oldImage.x = 0;
+            oldImage.y = 0;
+            oldImage.rotation = 0;
+        };
+        transitionTimer.start();
     }
 
     anchors.fill: parent
     Component.onCompleted: {
         if (WallpaperService.isInitialized) {
             var wallpaper = WallpaperService.getWallpaper(screenName);
-            if (wallpaper && wallpaper !== "") {
-                console.log("[Wallpaper] Loading wallpaper for", screenName, ":", wallpaper);
+            if (wallpaper && wallpaper !== "")
+                // Logger.d("Wallpaper", "Loading wallpaper for", screenName, ":", wallpaper);
                 root.source = "file://" + wallpaper;
-            }
+
         }
     }
     onSourceChanged: {
-        console.log("[Wallpaper] Source changed to:", source);
+        // Logger.d("Wallpaper", "Source changed to:", source);
         if (source === "") {
             currentImage = null;
         } else {
             var nextImage = (currentImage === img1) ? img2 : img1;
-            console.log("[Wallpaper] Loading into", (nextImage === img1 ? "img1" : "img2"));
+            // Logger.d("Wallpaper", "Loading into", (nextImage === img1 ? "img1" : "img2"));
             nextImage.opacity = 0;
             nextImage.scale = 1;
             nextImage.x = 0;
@@ -237,13 +227,27 @@ Item {
         }
     }
 
+    Timer {
+        id: transitionTimer
+
+        property var callback
+
+        interval: 1000
+        repeat: false
+        onTriggered: {
+            if (callback)
+                callback();
+
+        }
+    }
+
     Connections {
         function onWallpaperChanged(changedScreenName, path) {
             if (changedScreenName === screenName) {
-                console.log("[Wallpaper] Wallpaper changed for", screenName, "to", path);
+                Logger.d("Wallpaper", "Wallpaper changed for", screenName, "to", path);
                 root.source = "file://" + path;
                 transitionType = Math.floor(Math.random() * 15);
-                console.log("[Wallpaper] Selected transition type:", transitionType);
+                Logger.d("Wallpaper", "Selected transition type:", transitionType);
             }
         }
 
@@ -255,7 +259,7 @@ Item {
             if (WallpaperService.isInitialized && !root.source) {
                 var wallpaper = WallpaperService.getWallpaper(screenName);
                 if (wallpaper && wallpaper !== "") {
-                    console.log("[Wallpaper] Loading initial wallpaper for", screenName, ":", wallpaper);
+                    Logger.d("Wallpaper", "Loading initial wallpaper for", screenName, ":", wallpaper);
                     root.source = "file://" + wallpaper;
                 }
             }
@@ -316,13 +320,13 @@ Item {
             smooth: true
             opacity: (root.currentImage === img1) ? 1 : 0
             onStatusChanged: {
-                console.log("[Wallpaper] img1 status:", status === Image.Ready ? "Ready" : status === Image.Loading ? "Loading" : "Error");
-                if (status === Image.Ready && root.currentImage !== img1 && source == root.source) {
-                    console.log("[Wallpaper] img1 ready, will apply transition type:", root.transitionType);
+                // Logger.d("Wallpaper", "img1 status:", status === Image.Ready ? "Ready" : status === Image.Loading ? "Loading" : "Error");
+                if (status === Image.Ready && root.currentImage !== img1 && source == root.source)
+                    // Logger.d("Wallpaper", "img1 ready, will apply transition type:", root.transitionType);
                     Qt.callLater(function() {
                         applyTransition(img1, img2);
                     });
-                }
+
             }
 
             Behavior on opacity {
@@ -384,13 +388,13 @@ Item {
             smooth: true
             opacity: (root.currentImage === img2) ? 1 : 0
             onStatusChanged: {
-                console.log("[Wallpaper] img2 status:", status === Image.Ready ? "Ready" : status === Image.Loading ? "Loading" : "Error");
-                if (status === Image.Ready && root.currentImage !== img2 && source == root.source) {
-                    console.log("[Wallpaper] img2 ready, will apply transition type:", root.transitionType);
+                // Logger.d("Wallpaper", "img2 status:", status === Image.Ready ? "Ready" : status === Image.Loading ? "Loading" : "Error");
+                if (status === Image.Ready && root.currentImage !== img2 && source == root.source)
+                    // Logger.d("Wallpaper", "img2 ready, will apply transition type:", root.transitionType);
                     Qt.callLater(function() {
                         applyTransition(img2, img1);
                     });
-                }
+
             }
 
             Behavior on opacity {

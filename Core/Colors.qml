@@ -32,24 +32,24 @@ Item {
         try {
             var content = (typeof colorsFile.text === 'function') ? colorsFile.text() : colorsFile.text;
             if (!content || content.length === 0) {
-                console.log("[Colors] Content is empty or null");
+                Logger.d("Colors", "Content is empty or null");
                 return ;
             }
             var json = JSON.parse(content);
-            console.log("[Colors] Successfully parsed. Keys:", Object.keys(json));
+            Logger.d("Colors", "Successfully parsed. Keys:", Object.keys(json));
             if (json.colors) {
                 loadedColors = json.colors;
             } else {
-                console.log("[Colors] 'colors' key missing, using root json object");
+                Logger.i("Colors", "'colors' key missing, using root json object");
                 loadedColors = json;
             }
         } catch (e) {
-            console.warn("[Colors] Failed to parse colors.json:", e);
+            Logger.w("Colors", "Failed to parse colors.json:", e);
         }
     }
 
     Component.onCompleted: {
-        console.log("[Colors] Initialized. Path:", colorsFile.path);
+        Logger.i("Colors", "Initialized. Path:", colorsFile.path);
         refreshColors();
     }
 
@@ -59,15 +59,15 @@ Item {
         path: Quickshell.env("HOME") + "/.cache/mannu/colors.json"
         watchChanges: true
         onFileChanged: {
-            console.log("[Colors] File changed, reloading...");
+            Logger.d("Colors", "File changed, reloading...");
             colorsFile.reload();
         }
         onLoaded: {
-            console.log("[Colors] File loaded, refreshing colors...");
+            Logger.d("Colors", "File loaded, refreshing colors...");
             refreshColors();
         }
         onLoadFailed: {
-            console.warn("[Colors] File load failed.");
+            Logger.w("Colors", "File load failed.");
         }
     }
 
@@ -76,7 +76,7 @@ Item {
         running: loadedColors === null
         repeat: true
         onTriggered: {
-            console.log("[Colors] Retrying file load...");
+            Logger.i("Colors", "Retrying file load...");
             colorsFile.reload();
             refreshColors();
         }

@@ -159,20 +159,22 @@ PanelWindow {
     }
 
     Connections {
-        target: globalState
         function onRequestSidePanelMenu(menu) {
             if (root.currentMenu === menu && root.controlOpen) {
                 // If the same menu is requested and panel is open, close it (toggle behavior)
-                toggleMenu(menu); // This will close the menu
+                toggleMenu(menu);
+                // This will close the menu
                 root.controlOpen = false;
             } else {
                 // Otherwise open/switch to it
-                if (root.currentMenu !== menu) {
+                if (root.currentMenu !== menu)
                     toggleMenu(menu);
-                }
+
                 root.controlOpen = true;
             }
         }
+
+        target: globalState
     }
 
     MouseArea {
@@ -217,7 +219,7 @@ PanelWindow {
         border.width: 1
         border.color: theme.border
         clip: true // Ensure content doesn't bleed during animation
-        layer.enabled: true
+        layer.enabled: root.controlOpen || menuLoader.active || root.forcedOpen
 
         Column {
             id: contentCol
@@ -241,8 +243,6 @@ PanelWindow {
                 volumeService: root.volumeService
                 bluetoothService: root.bluetoothService
             }
-
-
 
             Loader {
                 id: menuLoader
@@ -345,7 +345,7 @@ PanelWindow {
         color: Qt.rgba(theme.bg.r, theme.bg.g, theme.bg.b, 0.95)
         border.width: 1
         border.color: theme.border
-        layer.enabled: true
+        layer.enabled: root.notifOpen || root.forcedOpen
 
         Views.NotificationBoxContent {
             id: notifContent
@@ -382,6 +382,7 @@ PanelWindow {
                 easing.type: Easing.BezierSpline
                 easing.bezierCurve: [0.38, 1.21, 0.22, 1, 1, 1]
             }
+
         }
 
     }

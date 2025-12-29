@@ -149,10 +149,10 @@ Item {
                         root.city = response.city;
                         fetchWeather(response.lat, response.lon);
                     } catch (e) {
-                        console.warn("[Weather] Location JSON parse error");
+                        Logger.w("WeatherService", "Location JSON parse error");
                     }
                 } else {
-                    console.warn("[Weather] Location fetch failed:", xhr.status);
+                    Logger.w("WeatherService", "Location fetch failed: " + xhr.status);
                     root.city = "Unknown";
                 }
             }
@@ -170,6 +170,8 @@ Item {
             if (xhr.readyState === XMLHttpRequest.DONE) {
                 if (xhr.status === 200) {
                     try {
+                        // Always use day icon for forecast
+
                         var response = JSON.parse(xhr.responseText);
                         // 1. Current Weather
                         var current = response.current;
@@ -195,8 +197,6 @@ Item {
                         var newForecast = [];
                         // Start from index 1 (Tomorrow), loop for 5 days
                         for (var i = 1; i < 6; i++) {
-                            // Always use day icon for forecast
-
                             if (!daily.time[i])
                                 break;
 

@@ -23,7 +23,7 @@ WlSessionLockSurface {
         captureSource: root.screen
         opacity: 0
         Component.onCompleted: opacity = 1
-        layer.enabled: true
+        layer.enabled: root.active && (root.visible || root.opacity > 0)
 
         Behavior on opacity {
             NumberAnimation {
@@ -34,8 +34,9 @@ WlSessionLockSurface {
         }
 
         layer.effect: FastBlur {
-            radius: 64
+            radius: 32 // Reduced radius for performance
             transparentBorder: true
+            visible: layer.enabled
         }
 
     }

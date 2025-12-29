@@ -1,4 +1,3 @@
-import "../../../../Services" as Services
 import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Controls
@@ -18,13 +17,8 @@ ColumnLayout {
         Layout.preferredWidth: 240 // Increased for visualizer space
         Layout.preferredHeight: 240
 
-        Connections {
-            function onValuesChanged() {
-                visualizerRepeater.requestPaint();
-            }
-
-            target: Services.CavaService
-        }
+        property var cavaValues: Services.CavaService.values
+        onCavaValuesChanged: visualizerRepeater.requestPaint()
 
         Binding {
             target: Services.CavaService
@@ -80,23 +74,7 @@ ColumnLayout {
                 anchors.fill: parent
                 source: MprisService.artUrl
                 fillMode: Image.PreserveAspectCrop
-                layer.enabled: true
-
-                Rectangle {
-                    anchors.fill: parent
-                    color: theme.surface
-                    visible: albumArt.status !== Image.Ready
-                    radius: width / 2
-
-                    Text {
-                        anchors.centerIn: parent
-                        text: "󰝚"
-                        font.family: "Symbols Nerd Font"
-                        font.pixelSize: 32
-                        color: theme.accent
-                    }
-
-                }
+                layer.enabled: albumArt.status === Image.Ready && albumArt.width > 0 && albumArt.height > 0
 
                 layer.effect: OpacityMask {
 
@@ -104,6 +82,7 @@ ColumnLayout {
                         width: albumArt.width
                         height: albumArt.height
                         radius: width / 2
+                        visible: false // Optimization: mask source doesn't need to be drawn directly
                     }
 
                 }

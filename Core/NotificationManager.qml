@@ -34,12 +34,12 @@ Item {
     }
 
     function removeById(notifId) {
-        console.log("Removing notification with ID:", notifId);
+        Logger.d("NotifMan", "Removing notification with ID:", notifId);
         for (var i = 0; i < notifications.count; i++) {
             var item = notifications.get(i);
-            console.log("  Checking index", i, "ID:", item.id);
+            Logger.d("NotifMan", "  Checking index", i, "ID:", item.id);
             if (item.id === notifId) {
-                console.log("  Found! Removing...");
+                Logger.d("NotifMan", "  Found! Removing...");
                 if (item.ref)
                     item.ref.dismiss();
 
@@ -47,7 +47,7 @@ Item {
                 return ;
             }
         }
-        console.log("  Not found!");
+        Logger.d("NotifMan", "  Not found!");
     }
 
     function removeByRef(notificationRef) {
@@ -79,7 +79,7 @@ Item {
                 "urgency": notification.urgency,
                 "time": Qt.formatTime(new Date(), "hh:mm")
             });
-            console.log("Notification added:", notification.summary, "ID:", uniqueId, "Total count:", root.notifications.count);
+            Logger.d("NotifMan", "Notification added:", notification.summary, "ID:", uniqueId, "Total count:", root.notifications.count);
             root.currentPopup = notification;
             root.popupVisible = true;
             popupTimer.restart();

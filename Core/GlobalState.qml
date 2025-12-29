@@ -9,7 +9,7 @@ QtObject {
     property bool wallpaperPanelOpen: false
     property bool powerMenuOpen: false
     property bool infoPanelOpen: false
-    
+
     signal requestSidePanelMenu(string menu)
 
     function toggleLauncher() {

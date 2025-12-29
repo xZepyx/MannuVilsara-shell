@@ -44,7 +44,7 @@ PanelWindow {
                 root.notifUrgency = manager.currentPopup.urgency;
                 root.showing = true;
                 dismissTimer.restart();
-                console.log("[Toast] New notification captured: " + root.notifTitle);
+                Logger.d("Toast", "New notification captured: " + root.notifTitle);
             }
         }
 
@@ -70,6 +70,7 @@ PanelWindow {
         // Background
         Rectangle {
             id: bgRect
+
             property alias hovered: toastHandler.hovered
 
             anchors.fill: parent
@@ -88,12 +89,15 @@ PanelWindow {
 
                 HoverHandler {
                     id: toastHandler
+
                     cursorShape: Qt.PointingHandCursor
                 }
+
             }
-            
+
             RowLayout {
                 id: mainLayout
+
                 anchors.fill: parent
                 anchors.margins: 12
                 spacing: 12
@@ -108,20 +112,37 @@ PanelWindow {
 
                     Image {
                         id: imgDisplay
+
                         anchors.fill: parent
                         fillMode: Image.PreserveAspectCrop
                         layer.enabled: true
                         source: {
-                            if (root.notifImage && root.notifImage.startsWith("/")) return "file://" + root.notifImage;
-                            if (root.notifImage && root.notifImage.includes("://")) return root.notifImage;
-                            if (root.notifIcon && root.notifIcon.includes("/")) return "file://" + root.notifIcon;
-                            if (root.notifIcon) return "image://icon/" + root.notifIcon;
+                            if (root.notifImage && root.notifImage.startsWith("/"))
+                                return "file://" + root.notifImage;
+
+                            if (root.notifImage && root.notifImage.includes("://"))
+                                return root.notifImage;
+
+                            if (root.notifIcon && root.notifIcon.includes("/"))
+                                return "file://" + root.notifIcon;
+
+                            if (root.notifIcon)
+                                return "image://icon/" + root.notifIcon;
+
                             return "";
                         }
                         visible: status === Image.Ready
+
                         layer.effect: OpacityMask {
-                            maskSource: Rectangle { width: 40; height: 40; radius: 12 }
+
+                            maskSource: Rectangle {
+                                width: 40
+                                height: 40
+                                radius: 12
+                            }
+
                         }
+
                     }
 
                     Text {
@@ -132,6 +153,7 @@ PanelWindow {
                         color: theme.subtext
                         visible: !imgDisplay.visible
                     }
+
                 }
 
                 // Text Content
@@ -160,6 +182,7 @@ PanelWindow {
                         maximumLineCount: 2
                         lineHeight: 1.1
                     }
+
                 }
 
                 // Circular Timer + Close
@@ -167,32 +190,29 @@ PanelWindow {
                     Layout.preferredWidth: 24
                     Layout.preferredHeight: 24
                     Layout.alignment: Qt.AlignVCenter
-                    
+
                     // Circular Progress
                     Canvas {
                         id: timerCanvas
-                        anchors.fill: parent
+
                         property real progress: 0
-                        
+
+                        anchors.fill: parent
                         onProgressChanged: requestPaint()
-                        
                         onPaint: {
                             var ctx = getContext("2d");
                             ctx.reset();
-                            
                             var cx = width / 2;
                             var cy = height / 2;
                             var r = (width / 2) - 2;
                             var start = -Math.PI / 2;
                             var end = start + (2 * Math.PI * progress);
-                            
                             // Background ring
                             ctx.beginPath();
                             ctx.arc(cx, cy, r, 0, 2 * Math.PI);
                             ctx.strokeStyle = Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.1);
                             ctx.lineWidth = 2;
                             ctx.stroke();
-                            
                             // Progress arc
                             ctx.beginPath();
                             ctx.arc(cx, cy, r, start, end, false);
@@ -200,29 +220,32 @@ PanelWindow {
                             ctx.lineWidth = 2;
                             ctx.stroke();
                         }
-                        
+
+                        Connections {
+                            function onShowingChanged() {
+                                if (root.showing) {
+                                    timerCanvas.progress = 1;
+                                    timerAnim.restart();
+                                } else {
+                                    timerAnim.stop();
+                                }
+                            }
+
+                            target: root
+                        }
+
                         // We animate progress from 1.0 to 0.0
                         NumberAnimation on progress {
                             id: timerAnim
-                            from: 1.0
-                            to: 0.0
+
+                            from: 1
+                            to: 0
                             duration: root.displayTime
                             running: false
                         }
-                        
-                        Connections {
-                             target: root
-                             function onShowingChanged() {
-                                 if (root.showing) {
-                                     timerCanvas.progress = 1.0;
-                                     timerAnim.restart();
-                                 } else {
-                                     timerAnim.stop();
-                                 }
-                             }
-                        }
+
                     }
-                    
+
                     Text {
                         anchors.centerIn: parent
                         text: "✕"
@@ -230,8 +253,11 @@ PanelWindow {
                         font.pixelSize: 10
                         opacity: 0.5
                     }
+
                 }
+
             }
+
         }
 
         // Animations
@@ -241,10 +267,14 @@ PanelWindow {
                 damping: 0.25
                 epsilon: 0.25
             }
+
         }
 
         Behavior on opacity {
-            NumberAnimation { duration: 200 }
+            NumberAnimation {
+                duration: 200
+            }
+
         }
 
         layer.effect: DropShadow {
@@ -253,8 +283,10 @@ PanelWindow {
             samples: 17
             color: "#60000000"
             verticalOffset: 4
-            spread: 0.0
+            spread: 0
+            visible: root.showing
         }
+
     }
 
     mask: Region {

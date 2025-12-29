@@ -1,5 +1,6 @@
 import QtQuick
 import Quickshell.Io
+import qs.Core
 
 Item {
     // Expose total and used (bytes) plus usage percent
@@ -8,10 +9,6 @@ Item {
     property int usage: 0
     // Temporary storage for output
     property string outputBuffer: ""
-
-    Component.onCompleted: {
-        console.log("[MemService] Component initialized");
-    }
 
     Process {
         // onExited: (code) => {
@@ -29,25 +26,25 @@ Item {
         // Capture stdout as it comes in
         stdout: SplitParser {
             onRead: (data) => {
-                if (!data) {
-                    console.log("[MemService] No data received");
+                if (!data)
+                    // Logger.d("MemService", "No data received");
                     return ;
-                }
+
                 var output = data.trim();
-                if (output === "") {
-                    console.log("[MemService] Empty output after trim");
+                if (output === "")
+                    // Logger.d("MemService", "Empty output after trim");
                     return ;
-                }
+
                 // Split by whitespace
                 var parts = output.split(/\s+/);
                 if (parts.length < 2) {
-                    console.log("[MemService] Not enough parts");
+                    Logger.w("MemService", "Not enough parts");
                     return ;
                 }
                 var totalBytes = parseInt(parts[0]);
                 var usedBytes = parseInt(parts[1]);
                 if (isNaN(totalBytes) || isNaN(usedBytes) || totalBytes <= 0) {
-                    console.log("[MemService] Invalid values");
+                    Logger.e("MemService", "Invalid values");
                     return ;
                 }
                 // Update properties

@@ -56,7 +56,7 @@ Singleton {
             values = Array(barsCount).fill(0);
         }
         onExited: {
-            console.log("CavaService: Exited");
+            Logger.i("CavaService", "Exited");
             values = Array(barsCount).fill(0);
         }
 

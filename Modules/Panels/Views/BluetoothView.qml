@@ -132,8 +132,10 @@ Control {
                 TapHandler {
                     onTapped: {
                         if (modelData.paired || modelData.trusted) {
-                            if (modelData.connected) bluetoothService.disconnectDevice(modelData);
-                            else bluetoothService.connectDevice(modelData);
+                            if (modelData.connected)
+                                bluetoothService.disconnectDevice(modelData);
+                            else
+                                bluetoothService.connectDevice(modelData);
                         } else {
                             bluetoothService.pairDevice(modelData);
                         }

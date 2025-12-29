@@ -1,7 +1,7 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import qs.Core
 
 Rectangle {
     property int notifId: 0
@@ -125,7 +125,7 @@ Rectangle {
                 hoverEnabled: true
                 cursorShape: Qt.PointingHandCursor
                 onClicked: {
-                    console.log("NotificationItem close clicked for ID:", notifId);
+                    Logger.d("NotifItem", "Close clicked for ID:", notifId);
                     removeRequested();
                 }
             }

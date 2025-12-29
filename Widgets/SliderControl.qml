@@ -101,7 +101,7 @@ Rectangle {
                     color: theme ? theme.sliderThumb : "#FFFFFF"
                     anchors.right: parent.right
                     anchors.verticalCenter: parent.verticalCenter
-                    layer.enabled: true
+                    layer.enabled: visible && width > 0
 
                     layer.effect: DropShadow {
                         transparentBorder: true

@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Core
 
 Item {
     id: root
@@ -20,7 +21,7 @@ Item {
         stdout: SplitParser {
             onRead: (data) => {
                 if (data) {
-                    console.log("SystemInfo: User fetched -> " + data);
+                    Logger.d("SystemInfo", "User fetched -> " + data);
                     root.userName = data.trim();
                 }
             }
@@ -35,7 +36,7 @@ Item {
         stdout: SplitParser {
             onRead: (data) => {
                 if (data) {
-                    console.log("SystemInfo: OS fetched -> " + data);
+                    Logger.d("SystemInfo", "OS fetched -> " + data);
                     root.osName = data.trim();
                 }
             }

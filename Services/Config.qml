@@ -1,6 +1,7 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.Core
 pragma Singleton
 
 Singleton {
@@ -14,6 +15,10 @@ Singleton {
     property bool floatingBar: false
     property var colors: null
     property var openRgbDevices: [0]
+    property bool debug: false
+
+    onDebugChanged: Logger.debugEnabled = debug
+    Component.onCompleted: Logger.debugEnabled = debug
 
     FileView {
         id: configFile
@@ -21,7 +26,7 @@ Singleton {
         path: root.configPath
         watchChanges: true
         onFileChanged: {
-            console.log("Config changed, reloading...");
+            Logger.d("Config", "Config changed, reloading...");
             configFile.reload();
         }
         onLoaded: {
@@ -41,23 +46,24 @@ Singleton {
 
                 if (json.floatingBar !== undefined) {
                     root.floatingBar = json.floatingBar;
-                    console.log("Config: floatingBar set to", root.floatingBar);
+                    Logger.d("Config", "floatingBar set to", root.floatingBar);
                 }
                 if (json.colors)
                     root.colors = json.colors;
 
-                if (json.openRgbDevices !== undefined) {
-                    if (Array.isArray(json.openRgbDevices)) {
-                        root.openRgbDevices = json.openRgbDevices;
-                    } else if (typeof json.openRgbDevices === 'number') {
-                        root.openRgbDevices = [json.openRgbDevices];
-                    }
-                    console.log("Config: openRgbDevices set to", JSON.stringify(root.openRgbDevices));
-                }
+                if (json.debug !== undefined)
+                    root.debug = json.debug;
 
-                console.log("Config loaded from " + root.configPath);
+                if (json.openRgbDevices !== undefined) {
+                    if (Array.isArray(json.openRgbDevices))
+                        root.openRgbDevices = json.openRgbDevices;
+                    else if (typeof json.openRgbDevices === 'number')
+                        root.openRgbDevices = [json.openRgbDevices];
+                    Logger.d("Config", "openRgbDevices set to", JSON.stringify(root.openRgbDevices));
+                }
+                Logger.i("Config", "Loaded from " + root.configPath);
             } catch (e) {
-                console.error("Failed to parse config: " + e);
+                Logger.e("Config", "Failed to parse config: " + e);
             }
         }
     }

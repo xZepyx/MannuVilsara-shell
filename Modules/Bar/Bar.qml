@@ -1,4 +1,3 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
@@ -336,7 +335,7 @@ Rectangle {
 
         // System Stats
         InfoPill {
-             RowLayout {
+            RowLayout {
                 spacing: 6
 
                 Text {
@@ -349,6 +348,7 @@ Rectangle {
 
                 Text {
                     id: tCpu
+
                     text: cpuUsage + "%"
                     color: colors.fg
                     font.pixelSize: fontSize - 1
@@ -375,6 +375,7 @@ Rectangle {
 
                 Text {
                     id: tRam
+
                     text: memUsage + "%"
                     color: colors.fg
                     font.pixelSize: fontSize - 1
@@ -389,8 +390,10 @@ Rectangle {
         // Network
         InfoPill {
             visible: networkService
+
             RowLayout {
                 spacing: 6
+
                 Text {
                     text: networkService.wifiEnabled ? "󰖩" : "󰖪"
                     color: networkService.wifiEnabled ? colors.purple : colors.muted
@@ -398,8 +401,10 @@ Rectangle {
                     font.pixelSize: fontSize + 2
                     Layout.alignment: Qt.AlignBaseline
                 }
+
                 Text {
                     id: tNet
+
                     text: networkService.wifiEnabled ? (networkService.active ? networkService.active.ssid : "Disconnected") : "Off"
                     color: colors.fg
                     font.pixelSize: fontSize - 1
@@ -409,11 +414,14 @@ Rectangle {
                     elide: Text.ElideRight
                     Layout.alignment: Qt.AlignBaseline
                 }
+
             }
+
             TapHandler {
                 cursorShape: Qt.PointingHandCursor
                 onTapped: globalState.requestSidePanelMenu("wifi")
             }
+
         }
 
         // Volume
@@ -427,11 +435,17 @@ Rectangle {
                     font.family: "Symbols Nerd Font"
                     font.pixelSize: fontSize + 2
                     Layout.alignment: Qt.AlignBaseline
-                    Behavior on text { enabled: false } // Prevent animation on char change
+
+                    // Prevent animation on char change
+                    Behavior on text {
+                        enabled: false
+                    }
+
                 }
 
                 Text {
                     id: tVol
+
                     text: (volumeService && volumeService.muted) ? "MUT" : (volumeLevel + "%")
                     color: (volumeService && volumeService.muted) ? colors.red : colors.fg
                     font.pixelSize: fontSize - 1
@@ -441,23 +455,29 @@ Rectangle {
                 }
 
             }
-            
+
             TapHandler {
                 cursorShape: Qt.PointingHandCursor
                 onTapped: {
-                    if (volumeService) volumeService.toggleMute();
+                    if (volumeService)
+                        volumeService.toggleMute();
+
                 }
             }
             // WheelHandler is separate
+
             WheelHandler {
                 onWheel: (wheel) => {
-                    if (!volumeService) return;
+                    if (!volumeService)
+                        return ;
+
                     if (wheel.angleDelta.y > 0)
                         volumeService.increaseVolume();
                     else
                         volumeService.decreaseVolume();
                 }
             }
+
         }
 
         // Clock

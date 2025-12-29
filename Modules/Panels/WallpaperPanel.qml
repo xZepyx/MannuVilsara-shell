@@ -137,7 +137,7 @@ PanelWindow {
         radius: 16
         border.color: theme.muted
         border.width: 1
-        layer.enabled: true
+        layer.enabled: root.visible && root.internalOpen
 
         MouseArea {
             anchors.fill: parent
@@ -349,7 +349,7 @@ PanelWindow {
                             sourceSize.height: 200
                             cache: true
                             smooth: true
-                            layer.enabled: true
+                            layer.enabled: wImage.status === Image.Ready && wImage.width > 0
 
                             Behavior on opacity {
                                 NumberAnimation {

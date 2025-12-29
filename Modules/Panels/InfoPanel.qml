@@ -122,7 +122,7 @@ PanelWindow {
         border.width: 1
         border.color: appColors.border
         clip: true
-        layer.enabled: true
+        layer.enabled: root.isOpen || root.forcedOpen || root.height > 0
 
         MouseArea {
             anchors.fill: parent
@@ -146,11 +146,6 @@ PanelWindow {
                     spacing: 16
 
                     Repeater {
-                        // Home
-                        // Music
-                        // Weather
-                        // System
-
                         model: [{
                             "icon": "󰣇",
                             "index": 0
@@ -260,6 +255,7 @@ PanelWindow {
             radius: 16
             samples: 17
             color: "#40000000"
+            visible: mainBox.visible && mainBox.opacity > 0
         }
 
         Behavior on x {
