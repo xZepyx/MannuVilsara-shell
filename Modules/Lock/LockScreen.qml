@@ -6,6 +6,7 @@ import Quickshell
 import Quickshell.Wayland
 import qs.Core
 import qs.Services
+import Quickshell.Services.Notifications
 
 WlSessionLockSurface {
     id: root
@@ -21,6 +22,25 @@ WlSessionLockSurface {
     property real expandedWidth: Math.min(width - 60, 920)
     property real expandedHeight: Math.min(height - 80, 480)
     property real collapsedSize: 120
+
+    // Notifications
+    ListModel { id: notifications }
+
+    NotificationServer {
+        id: server
+        bodySupported: true
+        imageSupported: true
+        onNotification: (n) => {
+            n.tracked = true
+            notifications.insert(0, {
+                summary: n.summary || "Notification",
+                body: n.body || "",
+                appName: n.appName || "",
+                appIcon: n.appIcon || "",
+                time: Qt.formatTime(new Date(), "hh:mm")
+            })
+        }
+    }
 
     // Blurred window preview background
     ScreencopyView {
@@ -537,18 +557,130 @@ WlSessionLockSurface {
                         borderColor: root.colors.border
 
                         ColumnLayout {
-                            anchors.fill: parent; anchors.margins: 10; spacing: 6
+                            anchors.fill: parent
+                            anchors.margins: 10
+                            spacing: 6
 
-                            Text { text: "Notifications"; color: root.colors.fg; font.pixelSize: 11; font.bold: true }
-                            Rectangle { Layout.fillWidth: true; height: 1; color: root.colors.border; opacity: 0.4 }
+                            RowLayout {
+                                Layout.fillWidth: true
 
+                                Text {
+                                    text: "Notifications"
+                                    color: root.colors.fg
+                                    font.pixelSize: 11
+                                    font.bold: true
+                                }
+
+                                Item { Layout.fillWidth: true }
+
+                                Text {
+                                    text: notifications.count > 0 ? notifications.count.toString() : ""
+                                    color: root.colors.accent
+                                    font.pixelSize: 10
+                                    font.bold: true
+                                    visible: notifications.count > 0
+                                }
+                            }
+
+                            Rectangle {
+                                Layout.fillWidth: true
+                                height: 1
+                                color: root.colors.border
+                                opacity: 0.4
+                            }
+
+                            // Notification list or empty state
                             Item {
-                                Layout.fillWidth: true; Layout.fillHeight: true
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                clip: true
 
+                                // Empty state
                                 ColumnLayout {
-                                    anchors.centerIn: parent; spacing: 4
-                                    Text { text: "󰂚"; font.family: "Symbols Nerd Font"; font.pixelSize: 28; color: root.colors.muted; opacity: 0.35; Layout.alignment: Qt.AlignHCenter }
-                                    Text { text: "All caught up"; color: root.colors.muted; font.pixelSize: 10; Layout.alignment: Qt.AlignHCenter }
+                                    anchors.centerIn: parent
+                                    spacing: 4
+                                    visible: notifications.count === 0
+
+                                    Text {
+                                        text: "󰂚"
+                                        font.family: "Symbols Nerd Font"
+                                        font.pixelSize: 28
+                                        color: root.colors.muted
+                                        opacity: 0.35
+                                        Layout.alignment: Qt.AlignHCenter
+                                    }
+
+                                    Text {
+                                        text: "All caught up"
+                                        color: root.colors.muted
+                                        font.pixelSize: 10
+                                        Layout.alignment: Qt.AlignHCenter
+                                    }
+                                }
+
+                                // Notification list
+                                ListView {
+                                    anchors.fill: parent
+                                    model: notifications
+                                    spacing: 6
+                                    visible: notifications.count > 0
+                                    clip: true
+
+                                    delegate: Rectangle {
+                                        width: ListView.view.width
+                                        height: 48
+                                        radius: 8
+                                        color: Qt.rgba(root.colors.tileActive.r, root.colors.tileActive.g, root.colors.tileActive.b, 0.4)
+
+                                        RowLayout {
+                                            anchors.fill: parent
+                                            anchors.margins: 6
+                                            spacing: 8
+
+                                            Rectangle {
+                                                Layout.preferredWidth: 28
+                                                Layout.preferredHeight: 28
+                                                radius: 6
+                                                color: root.colors.surface
+
+                                                Text {
+                                                    anchors.centerIn: parent
+                                                    text: "󰍡"
+                                                    font.family: "Symbols Nerd Font"
+                                                    font.pixelSize: 14
+                                                    color: root.colors.accent
+                                                }
+                                            }
+
+                                            ColumnLayout {
+                                                Layout.fillWidth: true
+                                                spacing: 0
+
+                                                Text {
+                                                    text: model.summary
+                                                    color: root.colors.fg
+                                                    font.pixelSize: 10
+                                                    font.bold: true
+                                                    Layout.fillWidth: true
+                                                    elide: Text.ElideRight
+                                                }
+
+                                                Text {
+                                                    text: model.body || model.appName
+                                                    color: root.colors.muted
+                                                    font.pixelSize: 9
+                                                    Layout.fillWidth: true
+                                                    elide: Text.ElideRight
+                                                }
+                                            }
+
+                                            Text {
+                                                text: model.time
+                                                color: root.colors.muted
+                                                font.pixelSize: 8
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
