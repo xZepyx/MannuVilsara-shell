@@ -97,10 +97,22 @@ Singleton {
 
                 if (configAdapter.openRgbDevices !== undefined) {
                     var dev = configAdapter.openRgbDevices;
-                    if (Array.isArray(dev))
-                        root.openRgbDevices = dev;
-                    else
-                        root.openRgbDevices = [dev]; // Handle single value
+                    var flatList = [];
+                    
+                    var flatten = function(val) {
+                        if (val === undefined || val === null) return;
+                        if (Array.isArray(val) || (typeof val === 'object' && val.length !== undefined)) {
+                            for (var i = 0; i < val.length; i++) {
+                                flatten(val[i]);
+                            }
+                        } else {
+                            flatList.push(val);
+                        }
+                    }
+                    
+                    flatten(dev);
+                    root.openRgbDevices = flatList;
+                    Logger.d("Config", "Loaded OpenRGB devices:", JSON.stringify(flatList));
                 }
                 Logger.i("Config", "Loaded from " + root.configPath);
             } catch (e) {
