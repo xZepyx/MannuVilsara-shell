@@ -86,15 +86,19 @@ WlSessionLockSurface {
         rotation: Config.disableLockAnimation ? 0 : -180
         
         Behavior on width {
+            enabled: !Config.disableLockAnimation
             NumberAnimation { duration: 500; easing.type: Easing.OutBack; easing.overshoot: 1.02 }
         }
         Behavior on height {
+            enabled: !Config.disableLockAnimation
             NumberAnimation { duration: 500; easing.type: Easing.OutBack; easing.overshoot: 1.02 }
         }
         Behavior on radius {
+            enabled: !Config.disableLockAnimation
             NumberAnimation { duration: 400; easing.type: Easing.OutCubic }
         }
         Behavior on border.width {
+            enabled: !Config.disableLockAnimation
             NumberAnimation { duration: 200 }
         }
 
@@ -110,9 +114,11 @@ WlSessionLockSurface {
             scale: root.expanded ? 0.5 : 1
             
             Behavior on opacity {
+                enabled: !Config.disableLockAnimation
                 NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
             }
             Behavior on scale {
+                enabled: !Config.disableLockAnimation
                 NumberAnimation { duration: 300; easing.type: Easing.OutCubic }
             }
         }
@@ -126,9 +132,11 @@ WlSessionLockSurface {
             scale: root.expanded ? 1 : 0.8
             
             Behavior on opacity {
+                enabled: !Config.disableLockAnimation
                 NumberAnimation { duration: 400; easing.type: Easing.OutCubic }
             }
             Behavior on scale {
+                enabled: !Config.disableLockAnimation
                 NumberAnimation { duration: 400; easing.type: Easing.OutCubic }
             }
 
