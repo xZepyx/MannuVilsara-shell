@@ -141,6 +141,14 @@ Item {
     }
 
     IpcHandler {
+        function toggle() {
+            root.context.appState.toggleSettings();
+        }
+
+        target: "settings"
+    }
+
+    IpcHandler {
         function update() {
             clipboard.refresh();
         }

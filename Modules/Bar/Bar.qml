@@ -504,13 +504,11 @@ Rectangle {
                 font.bold: true
             }
 
-            TapHandler {
-                onTapped: globalState.toggleSettings()
+            MouseArea {
+                anchors.fill: parent
+                onClicked: globalState.toggleSettings()
                 cursorShape: Qt.PointingHandCursor
-            }
-
-            HoverHandler {
-                cursorShape: Qt.PointingHandCursor
+                hoverEnabled: true // For HoverHandler behavior if needed, or just rely on MouseArea
             }
 
         }

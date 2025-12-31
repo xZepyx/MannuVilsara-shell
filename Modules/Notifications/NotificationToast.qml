@@ -32,6 +32,8 @@ PanelWindow {
     // Only show window if there are notifications
     visible: manager.activeNotifications.count > 0
 
+    property bool hovered: listHover.hovered
+
     ListView {
         id: contentList
         anchors.fill: parent
@@ -40,6 +42,10 @@ PanelWindow {
         model: manager.activeNotifications
         clip: false
         interactive: false // No scrolling
+        
+        HoverHandler {
+            id: listHover
+        }
         
         // Transitions
         add: Transition {

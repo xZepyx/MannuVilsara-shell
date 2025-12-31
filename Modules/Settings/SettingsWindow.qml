@@ -15,6 +15,11 @@ FloatingWindow {
     property var colors: context.colors
 
     visible: context.appState.settingsOpen
+    onVisibleChanged: {
+        if (!visible) {
+            context.appState.settingsOpen = false;
+        }
+    }
     
     property int windowWidth: 800
     property int windowHeight: 550
