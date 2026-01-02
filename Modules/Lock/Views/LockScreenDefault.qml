@@ -30,6 +30,7 @@ Item {
             anchors.fill: parent
             captureSource: Quickshell.screens[0] // Assuming primary screen or passed screen
             visible: !Config.lockScreenCustomBackground
+            enabled: visible
             layer.enabled: true
 
             layer.effect: FastBlur {
