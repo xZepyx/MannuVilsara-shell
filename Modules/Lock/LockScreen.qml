@@ -63,8 +63,7 @@ WlSessionLockSurface {
         // Blurred window preview background (Default)
         ScreencopyView {
             anchors.fill: parent
-            // Only capture when this view is definitely visible to save resources
-            captureSource: visible ? root.screen : null
+            captureSource: !Config.lockScreenCustomBackground ? root.screen : null
             visible: !Config.lockScreenCustomBackground
             layer.enabled: visible && bg.opacity > 0 && !Config.disableLockBlur
 
