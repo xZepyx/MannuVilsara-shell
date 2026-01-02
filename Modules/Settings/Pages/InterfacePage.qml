@@ -26,7 +26,7 @@ ColumnLayout {
         sublabel: "Reduce animations for performance"
         icon: "󰏇"
         active: Config.disableHover
-        theme: colors
+        colors: context.colors
         onActiveChanged: {
             if (Config.disableHover !== active)
                 Config.disableHover = active;

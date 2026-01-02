@@ -26,7 +26,7 @@ ColumnLayout {
         sublabel: "Detach bar from screen edges"
         icon: "󰖲"
         active: Config.floatingBar
-        theme: colors
+        colors: context.colors
         onActiveChanged: {
             if (Config.floatingBar !== active)
                 Config.floatingBar = active;

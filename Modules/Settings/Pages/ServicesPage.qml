@@ -26,7 +26,7 @@ ColumnLayout {
         sublabel: "Enable verbose logging"
         icon: "󰃤"
         active: Config.debug
-        theme: colors
+        colors: context.colors
         onActiveChanged: {
             if (Config.debug !== active)
                 Config.debug = active;

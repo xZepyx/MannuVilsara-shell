@@ -5,11 +5,11 @@ Item {
     id: root
 
     property bool checked: false
-    property var theme: null
+    property var colors: null
     // Colors
-    property color activeColor: theme ? theme.accent : "#CBA6F7"
-    property color inactiveColor: theme ? theme.surface : "#313244"
-    property color thumbColor: theme ? theme.fg : "#CDD6F4"
+    property color activeColor: colors ? colors.accent : "#CBA6F7"
+    property color inactiveColor: colors ? colors.surface : "#313244"
+    property color thumbColor: colors ? colors.fg : "#CDD6F4"
 
     // Size configuration
     implicitWidth: 44
@@ -22,7 +22,7 @@ Item {
         radius: height / 2
         color: root.checked ? root.activeColor : root.inactiveColor
         border.width: 1
-        border.color: root.checked ? root.activeColor : (theme ? theme.border : "#45475A")
+        border.color: root.checked ? root.activeColor : (colors ? colors.border : "#45475A")
 
         Rectangle {
             id: thumb

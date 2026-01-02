@@ -26,7 +26,7 @@ ColumnLayout {
         sublabel: "Enable blur effect on lock screen"
         icon: "󰂚"
         active: !Config.disableLockBlur
-        theme: colors
+        colors: context.colors
         onActiveChanged: {
             if (active !== !Config.disableLockBlur)
                 Config.disableLockBlur = !active;
@@ -40,7 +40,7 @@ ColumnLayout {
         sublabel: "Enable startup animation on lock screen"
         icon: "󰑮"
         active: !Config.disableLockAnimation
-        theme: colors
+        colors: context.colors
         onActiveChanged: {
             if (active !== !Config.disableLockAnimation)
                 Config.disableLockAnimation = !active;
@@ -54,7 +54,7 @@ ColumnLayout {
         sublabel: "Show only wallpaper (hide windows/bar)"
         icon: "󰸉"
         active: Config.lockScreenCustomBackground
-        theme: colors
+        colors: context.colors
         onActiveChanged: {
             if (active !== Config.lockScreenCustomBackground)
                 Config.lockScreenCustomBackground = active;
