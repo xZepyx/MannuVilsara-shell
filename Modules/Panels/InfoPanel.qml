@@ -49,6 +49,11 @@ PanelWindow {
     Colors {
         id: appColors
     }
+    
+    // --- Persistent Services ---
+    CpuService { id: cpuService }
+    MemService { id: memService }
+    DiskService { id: diskService }
 
     SystemInfoService {
         id: systemInfo
@@ -302,7 +307,7 @@ PanelWindow {
 
             anchors.centerIn: parent
 
-            width: Math.min(item ? item.implicitWidth : 0, 800)
+            width: Math.min(item ? item.implicitWidth : 0, Screen.width - 100)
             height: item ? item.implicitHeight : 0
             sourceComponent: {
                 switch (root.currentTab) {
@@ -415,6 +420,12 @@ PanelWindow {
 
         InfoViews.SystemView {
             theme: appColors
+            cpuUsage: cpuService.usage
+            memUsage: memService.usage
+            memUsed: memService.used
+            memTotal: memService.total
+            diskUsage: diskService.usage
+            diskFree: diskService.free
         }
     }
 

@@ -41,9 +41,10 @@ Item {
     }
 
     Timer {
-        interval: 1000
+        interval: 1500
         running: true
         repeat: true
+        triggeredOnStart: true
         onTriggered: cpuProc.running = true
     }
 

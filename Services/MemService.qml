@@ -4,8 +4,8 @@ import qs.Core
 
 Item {
     // Expose total and used (bytes) plus usage percent
-    property int total: 0
-    property int used: 0
+    property real total: 0
+    property real used: 0
     property int usage: 0
     // Temporary storage for output
     property string outputBuffer: ""
@@ -57,7 +57,7 @@ Item {
     }
 
     Timer {
-        interval: 1000
+        interval: 1500
         running: true
         repeat: true
         triggeredOnStart: true
