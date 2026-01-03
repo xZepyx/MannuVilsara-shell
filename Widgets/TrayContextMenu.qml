@@ -38,7 +38,7 @@ PanelWindow {
         let safeY = y; // Use exact Y position (no gap)
 
         menuX = safeX;
-        menuY = safeY-33;
+        menuY = safeY-34;
         
         visible = true;
         isOpen = true;
@@ -83,22 +83,21 @@ PanelWindow {
         id: menuContainer
         
         x: root.menuX
-        y: root.menuY - 1  // Move up 1px to overlap and stick to bar
+        y: root.menuY - 1
         width: 240
-        height: menuBox.height
         
-        // Transform from the top center (where it connects to bar)
-        transformOrigin: Item.Top
+        // Animate height to slide down from bar
+        clip: true
+        height: root.isOpen ? menuBox.height : 0
         
-        // Snappy Entrance Animation
-        scale: root.isOpen ? 1.0 : 0.85
-        opacity: root.isOpen ? 1.0 : 0.0
-        
-        Behavior on scale { 
-            NumberAnimation { duration: 250; easing.type: Easing.OutCubic } 
+        Behavior on height { 
+            NumberAnimation { duration: 300; easing.type: Easing.OutCubic } 
         }
+        
+        // Fade in as it slides
+        opacity: root.isOpen ? 1.0 : 0.0
         Behavior on opacity { 
-            NumberAnimation { duration: 200; easing.type: Easing.OutQuad } 
+            NumberAnimation { duration: 250; easing.type: Easing.OutQuad } 
         }
 
         // Shadow only on bottom and sides (not top)
@@ -128,37 +127,36 @@ PanelWindow {
             id: menuBox
             width: parent.width
             height: column.implicitHeight + 16
+            color: "transparent"
+            radius: 0
+            clip: true
             
-            // Clean, minimal background
-            color: Qt.rgba(root.colors.bg.r, root.colors.bg.g, root.colors.bg.b, 0.95)
-            radius: 0 // No radius - will be applied selectively
-            clip: false
-            
-            // Only round bottom corners to stick to bar at top
+            // Background with rounded bottom corners
             Rectangle {
+                id: menuBackground
                 anchors.fill: parent
-                color: parent.color
-                radius: 12
+                color: Qt.rgba(root.colors.bg.r, root.colors.bg.g, root.colors.bg.b, 0.95)
+                radius: 14
                 
-                // Cut off top half to make top edge flat
+                // Cut off top to make it flat
                 Rectangle {
                     anchors.top: parent.top
                     anchors.left: parent.left
                     anchors.right: parent.right
-                    height: parent.radius
+                    height: 14
                     color: parent.color
                 }
             }
             
-            // Border - only on sides and bottom
+            // Border on sides and bottom only
             Rectangle {
                 anchors.fill: parent
                 color: "transparent"
                 border.width: 1
                 border.color: root.colors.border
-                radius: 12
+                radius: 14
                 
-                // Cover top border
+                // Hide top border
                 Rectangle {
                     anchors.top: parent.top
                     anchors.left: parent.left
