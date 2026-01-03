@@ -96,34 +96,65 @@ Item {
         
         ColumnLayout {
             anchors.centerIn: parent
-            spacing: 32
+            anchors.verticalCenterOffset: -100 // Further lift content
+            spacing: 0 // Remove gap between clock and date, and other items
             
-            Text {
-                text: Qt.formatTime(new Date(), "hh:mm")
-                font.family: Config.fontFamily
-                font.pixelSize: Math.min(Math.max(Screen.height * 0.15, 64), 180)
-                font.weight: Font.Bold
-                color: root.colors.fg
+            Column {
                 Layout.alignment: Qt.AlignHCenter
-                
-                layer.enabled: true
-                layer.effect: DropShadow {
-                    transparentBorder: true
-                    radius: 16
-                    samples: 16
-                    color: "#80000000"
+                spacing: -80 // Move minutes UP even more
+
+                Text {
+                    // %I is 12-hour format (01-12)
+                    text: {
+                        let h = new Date().getHours() % 12 || 12;
+                        return h.toString().padStart(2, '0');
+                    }
+                    font.family: "StretchPro"
+                    font.pixelSize: 200
+                    font.weight: Font.Bold
+                    color: "#FFFFFF" 
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.horizontalCenterOffset: -80 // Shift Left (One's place centered)
+                    
+                    layer.enabled: true
+                    layer.effect: DropShadow {
+                        transparentBorder: true
+                        radius: 16
+                        samples: 16
+                        color: "#80000000"
+                    }
+                }
+
+                Text {
+                    text: Qt.formatTime(new Date(), "mm")
+                    font.family: "StretchPro"
+                    font.pixelSize: 200
+                    font.weight: Font.Bold
+                    color: "#93C4FF"
+                    anchors.horizontalCenter: parent.horizontalCenter
+                    anchors.horizontalCenterOffset: 80 // Shift Right (Ten's place centered)
+                    
+                    layer.enabled: true
+                    layer.effect: DropShadow {
+                        transparentBorder: true
+                        radius: 16
+                        samples: 16
+                        color: "#80000000"
+                    }
                 }
             }
-            
+
             Text {
-                text: Qt.formatDate(new Date(), "dddd, MMMM d")
-                font.family: Config.fontFamily
+                // "28 July, Sun." -> d MMMM, ddd.
+                text: Qt.formatDate(new Date(), "d MMMM, ddd.")
+                font.family: "JetBrainsMono Nerd Font" 
                 font.pixelSize: 24
                 font.weight: Font.Medium
                 color: root.colors.fg
-                opacity: 0.9
+                opacity: 0.7
                 Layout.alignment: Qt.AlignHCenter
-                 layer.enabled: true
+                
+                layer.enabled: true
                 layer.effect: DropShadow {
                     transparentBorder: true
                     radius: 8
@@ -177,14 +208,16 @@ Item {
                 }
             }
             
+            Item { Layout.preferredHeight: 32 } // Spacer between Song Info and Controls
+
             RowLayout {
                 Layout.alignment: Qt.AlignHCenter
-                spacing: 48
+                spacing: 32 // Reduced spacing between buttons
                 
                 Text {
                     text: "󰒮"
                     font.family: "Symbols Nerd Font"
-                    font.pixelSize: 48
+                    font.pixelSize: 32 // Smaller prev icon (was 48)
                     color: root.colors.fg
                     opacity: prevMouse.containsMouse ? 1 : 0.7
                     
@@ -207,16 +240,16 @@ Item {
                 }
                 
                 Rectangle {
-                    width: 96
-                    height: 96
-                    radius: 48
+                    width: 64 // Smaller button (was 96)
+                    height: 64
+                    radius: 32
                     color: root.colors.accent
                     
                     Text {
                         anchors.centerIn: parent
                         text: MprisService.isPlaying ? "󰏤" : "󰐊"
                         font.family: "Symbols Nerd Font"
-                        font.pixelSize: 42
+                        font.pixelSize: 28 // Smaller play icon (was 42)
                         color: root.colors.bg
                     }
                     
@@ -234,7 +267,7 @@ Item {
                     layer.enabled: true
                     layer.effect: DropShadow {
                         transparentBorder: true
-                        radius: 16
+                        radius: 12 // Reduced shadow radius
                         samples: 16
                         color: "#60000000"
                     }
@@ -243,7 +276,7 @@ Item {
                 Text {
                     text: "󰒭"
                     font.family: "Symbols Nerd Font"
-                    font.pixelSize: 48
+                    font.pixelSize: 32 // Smaller next icon (was 48)
                     color: root.colors.fg
                     opacity: nextMouse.containsMouse ? 1 : 0.7
                     
