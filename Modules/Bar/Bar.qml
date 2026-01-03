@@ -33,7 +33,7 @@ Rectangle {
     property real batteryPercent: battery && battery.percentage !== undefined ? battery.percentage * 100 : 0
     property bool batteryCharging: battery && battery.state === UPowerDeviceState.Charging
     property bool batteryFull: battery && battery.state === UPowerDeviceState.FullyCharged
-    property bool batteryReady: battery && battery.ready && battery.percentage !== undefined
+    property bool batteryReady: battery && battery.ready && battery.percentage !== undefined && battery.isPresent
 
     anchors.fill: parent
     color: colors.bg
