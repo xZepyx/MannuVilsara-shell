@@ -12,6 +12,7 @@ RowLayout {
     property var pinnedApps: []
     property var blacklist: []
     property bool hidePassive: false
+    property var colors: null  
     property var visibleItems: {
         var items = SystemTray.items.values || [];
         return items.filter((item) => {
@@ -92,8 +93,8 @@ RowLayout {
                         modelData.secondaryActivate();
                     } else if (mouse.button === Qt.RightButton) {
                         if (modelData.hasMenu && modelData.menu) {
-                            var pos = itemMouseArea.mapToGlobal(0, itemMouseArea.height);
-                            contextMenu.open(modelData.menu, pos.x, pos.y + 4);
+                            var pos = itemMouseArea.mapToGlobal(itemMouseArea.width / 2, itemMouseArea.height);
+                            contextMenu.open(modelData.menu, pos.x, pos.y);
                         }
                     }
                 }
@@ -108,6 +109,7 @@ RowLayout {
 
         Layout.preferredWidth: 0
         Layout.preferredHeight: 0
+        colors: trayRoot.colors
     }
 
 }

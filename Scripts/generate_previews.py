@@ -11,14 +11,14 @@ def generate_thumbnail(args):
         return # Skip if exists
         
     try:
-        # Resize to 300x200, covering the area (^) and cropping to center
-        # This matches the aspect ratio of the grid cells roughly
+        # Resize to 600x400, covering the area (^) and cropping to center
+        # This matches the aspect ratio of the grid cells roughly but with higher quality
         cmd = [
             "convert",
             src,
-            "-resize", "300x200^",
+            "-resize", "600x400^",
             "-gravity", "center",
-            "-extent", "300x200",
+            "-extent", "600x400",
             dest
         ]
         subprocess.run(cmd, check=True, stderr=subprocess.DEVNULL)
