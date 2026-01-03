@@ -73,6 +73,19 @@ Rectangle {
             property int activeWs: Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : 1
             property int pageIndex: Math.floor((activeWs - 1) / 5)
             property int pageStart: pageIndex * 5 + 1
+            property bool isSpecialOpen: Hyprland.focusedMonitor && Hyprland.focusedMonitor.lastIpcObject.specialWorkspace.name !== ""
+
+            Connections {
+                target: Hyprland
+                function onRawEvent(event) {
+                    const n = event.name;
+                    if (["activespecial", "focusedmon", "workspace", "moveworkspace"].includes(n)) {
+                        Hyprland.refreshMonitors();
+                    }
+                }
+            }
+            
+
 
             MouseArea {
                 anchors.fill: parent
@@ -83,76 +96,73 @@ Rectangle {
                         Hyprland.dispatch("workspace +1");
                 }
             }
-
-            Rectangle {
-                id: highlight
-                
-                property int relIndex: (wsContainer.activeWs - 1) % 5
-                property real itemWidth: 26 
-                property real spacing: 4
-                
-                property real targetX1: relIndex * (itemWidth + spacing) + 2 
-                property real targetX2: targetX1
-                
-                property real animatedX1: targetX1
-                property real animatedX2: targetX2
-                
-                onTargetX1Changed: animatedX1 = targetX1
-                onTargetX2Changed: animatedX2 = targetX2
-
-                x: Math.min(animatedX1, animatedX2)
-                width: Math.abs(animatedX2 - animatedX1) + itemWidth
-                height: 26
-                radius: 13
-                color: colors.accent
-
-                Behavior on animatedX1 {
-                    NumberAnimation {
-                        duration: 400 / 3
-                        easing.type: Easing.OutSine
-                    }
-                }
-
-                Behavior on animatedX2 {
-                    NumberAnimation {
-                        duration: 400
-                        easing.type: Easing.OutSine
-                    }
-                }
-            }
-
-            Row {
+            
+            Item {
+                id: wsContent
                 anchors.fill: parent
-                anchors.leftMargin: 2
-                anchors.rightMargin: 2
-                spacing: 4
+                opacity: parent.isSpecialOpen ? 0 : 1
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+                
+                Rectangle {
+                    id: highlight
+                    
+                    property int relIndex: (wsContainer.activeWs - 1) % 5
+                    property real itemWidth: 26 
+                    property real spacing: 4
+                    
+                    property real targetX1: relIndex * (itemWidth + spacing) + 2 
+                    property real targetX2: targetX1
+                    
+                    property real animatedX1: targetX1
+                    property real animatedX2: targetX2
+                    
+                    onTargetX1Changed: animatedX1 = targetX1
+                    onTargetX2Changed: animatedX2 = targetX2
 
-                Repeater {
-                    model: 5
-                    delegate: Item {
-                        property int wsId: wsContainer.pageStart + index
-                        property bool isActive: wsId === wsContainer.activeWs
-                        property var workspace: Hyprland.workspaces.values.find(w => w.id === wsId)
-                        property bool hasWindows: workspace !== undefined && workspace !== null
+                    x: Math.min(animatedX1, animatedX2)
+                    width: Math.abs(animatedX2 - animatedX1) + itemWidth
+                    height: 26
+                    radius: 13
+                    color: colors.accent
 
-                        width: 26
-                        height: 26
-                        
+                    Behavior on animatedX1 {
+                        NumberAnimation {
+                            duration: 400 / 3
+                            easing.type: Easing.OutSine
+                        }
+                    }
+
+                    Behavior on animatedX2 {
+                        NumberAnimation {
+                            duration: 400
+                            easing.type: Easing.OutSine
+                        }
+                    }
+                }
+
+                Row {
+                    anchors.fill: parent
+                    anchors.leftMargin: 2
+                    anchors.rightMargin: 2
+                    spacing: 4
+
+                    Repeater {
+                        model: 5
+                        delegate: Item {
+                            property int wsId: wsContainer.pageStart + index
+                            property bool isActive: wsId === wsContainer.activeWs
+                            property var workspace: Hyprland.workspaces.values.find(w => w.id === wsId)
+                            property bool hasWindows: workspace !== undefined && workspace !== null
+
+                            width: 26
+                            height: 26
+                            
+                            // Occupied Indicator (Replacing pink border with white layer)
                             Rectangle {
                                 anchors.fill: parent
                                 radius: width / 2
                                 color: (parent.hasWindows && !parent.isActive) ? Qt.rgba(1, 1, 1, 0.15) : "transparent"
-                                visible: (parent.hasWindows && !parent.isActive)
-                            }
-                            
-                            // Circle Indicator (Border)
-                            Rectangle {
-                                anchors.fill: parent
-                                radius: width / 2
-                                color: "transparent"
-                                
-                                border.width: (!parent.isActive && !Config.hideWorkspaceNumbers) ? (parent.hasWindows ? 2 : 1) : 0
-                                border.color: (!parent.isActive && !Config.hideWorkspaceNumbers) ? (parent.hasWindows ? colors.accent : Qt.rgba(1, 1, 1, 0.15)) : "transparent"
+                                visible: true 
                             }
                             
                             // Dot for hidden numbers mode
@@ -165,25 +175,49 @@ Rectangle {
                                 visible: Config.hideWorkspaceNumbers
                             }
                         
-                        MouseArea {
-                            anchors.fill: parent
-                            cursorShape: Qt.PointingHandCursor
-                            onClicked: Hyprland.dispatch("workspace " + wsId)
-                        }
+                            MouseArea {
+                                anchors.fill: parent
+                                cursorShape: Qt.PointingHandCursor
+                                onClicked: Hyprland.dispatch("workspace " + wsId)
+                            }
 
-                        Text {
-                            anchors.centerIn: parent
-                            text: wsId
-                            font.family: fontFamily
-                            font.pixelSize: fontSize
-                            font.bold: isActive
-                            color: isActive ? colors.bg : (hasWindows ? colors.accent : colors.subtext)
-                            visible: !Config.hideWorkspaceNumbers
-                            
-                            Behavior on color { ColorAnimation { duration: 200 } }
+                            Text {
+                                anchors.centerIn: parent
+                                text: wsId
+                                font.family: fontFamily
+                                font.pixelSize: fontSize
+                                font.bold: isActive
+                                color: isActive ? colors.bg : (hasWindows ? colors.accent : colors.subtext)
+                                visible: !Config.hideWorkspaceNumbers
+                                
+                                Behavior on color { ColorAnimation { duration: 200 } }
+                            }
                         }
                     }
                 }
+            }
+            
+            // Special Workspace Indicator (Circle with Star)
+            Rectangle {
+                anchors.centerIn: parent
+                width: 26
+                height: 26
+                radius: 13
+                color: colors.accent
+                scale: parent.isSpecialOpen ? 1 : 0.5
+                opacity: parent.isSpecialOpen ? 1 : 0
+                
+                Text {
+                    anchors.centerIn: parent
+                    text: "" // Nerd Font Star
+                    font.family: "Symbols Nerd Font"
+                    font.pixelSize: 18
+                    color: colors.bg
+                    font.bold: true
+                }
+                
+                Behavior on scale { NumberAnimation { duration: 300; easing.type: Easing.OutBack } }
+                Behavior on opacity { NumberAnimation { duration: 300 } }
             }
         }
 

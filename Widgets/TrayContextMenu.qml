@@ -128,6 +128,33 @@ PanelWindow {
                 menu: root.menuHandle
             }
             
+            Rectangle {
+                id: highlight
+                
+                property real targetY: 0
+                property bool active: false
+                
+                x: 8
+                y: menuColumn.y + targetY
+                width: parent.width - 16
+                height: 36
+                radius: 8
+                color: root.colors.accent
+                opacity: active ? 0.15 : 0
+                
+                Behavior on y {
+                    NumberAnimation {
+                        duration: 200
+                        easing.type: Easing.OutBack
+                        easing.overshoot: 0.8
+                    }
+                }
+                
+                Behavior on opacity {
+                    NumberAnimation { duration: 150 }
+                }
+            }
+
             Column {
                 id: menuColumn
                 
@@ -146,7 +173,6 @@ PanelWindow {
                         id: menuItem
                         
                         property bool isSeparator: modelData.isSeparator
-                        property bool isHovered: itemMouse.containsMouse && !isSeparator
                         property bool hasChildren: modelData.hasChildren
 
                         width: menuColumn.width
@@ -161,17 +187,9 @@ PanelWindow {
                             opacity: 0.5
                         }
 
+                        // Side marker
                         Rectangle {
-                            visible: !isSeparator
-                            anchors.fill: parent
-                            radius: 8
-                            color: isHovered ? root.colors.accent : "transparent"
-                            opacity: isHovered ? 0.15 : 0
-                            Behavior on opacity { NumberAnimation { duration: 150 } }
-                        }
-
-                        Rectangle {
-                            visible: !isSeparator && isHovered
+                            visible: !isSeparator && highlight.active && highlight.targetY === menuItem.y
                             width: 3
                             height: 16
                             radius: 2
@@ -201,7 +219,7 @@ PanelWindow {
                                     visible: modelData.icon !== undefined && modelData.icon !== ""
                                     layer.enabled: true
                                     layer.effect: ColorOverlay {
-                                        color: isHovered ? root.colors.accent : root.colors.muted
+                                        color: (highlight.active && highlight.targetY === menuItem.y) ? root.colors.accent : root.colors.muted
                                     }
                                 }
 
@@ -211,13 +229,13 @@ PanelWindow {
                                     text: ""
                                     font.family: "Symbols Nerd Font"
                                     font.pixelSize: 6
-                                    color: isHovered ? root.colors.accent : root.colors.muted
+                                    color: (highlight.active && highlight.targetY === menuItem.y) ? root.colors.accent : root.colors.muted
                                 }
                             }
 
                             Text {
                                 text: modelData.text || ""
-                                color: isHovered ? root.colors.fg : Qt.rgba(root.colors.fg.r, root.colors.fg.g, root.colors.fg.b, 0.8)
+                                color: (highlight.active && highlight.targetY === menuItem.y) ? root.colors.fg : Qt.rgba(root.colors.fg.r, root.colors.fg.g, root.colors.fg.b, 0.8)
                                 Layout.fillWidth: true
                                 elide: Text.ElideRight
                                 font.pixelSize: 13
@@ -241,6 +259,18 @@ PanelWindow {
                             hoverEnabled: true
                             cursorShape: isSeparator ? Qt.ArrowCursor : Qt.PointingHandCursor
                             
+                            onEntered: {
+                                if (!menuItem.isSeparator) {
+                                    highlight.targetY = menuItem.y
+                                    highlight.active = true
+                                } else {
+                                    // Optional: Don't hide highlight implies it skips over separators or stays
+                                    // replicating launcher behavior usually means it stays active on last item or moves
+                                    // Simpler: keep active but don't move? Or move?
+                                    // Let's just ignore separators so it stays on last item
+                                }
+                            }
+
                             onClicked: {
                                 if (!menuItem.isSeparator) {
                                     if (modelData.hasChildren) {

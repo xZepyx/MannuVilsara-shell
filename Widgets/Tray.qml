@@ -107,8 +107,7 @@ RowLayout {
     TrayContextMenu {
         id: contextMenu
 
-        Layout.preferredWidth: 0
-        Layout.preferredHeight: 0
+
         colors: trayRoot.colors
     }
 

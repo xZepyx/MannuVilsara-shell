@@ -241,7 +241,7 @@ PanelWindow {
                         Image {
                             id: img
                             anchors.fill: parent
-                            anchors.margins: border.width
+                            anchors.margins: card.border.width
                             
                             readonly property string fileName: modelData.split('/').pop()
                             readonly property string thumbSource: "file://" + WallpaperService.previewDirectory + "/" + fileName
@@ -298,12 +298,14 @@ PanelWindow {
                         }
                         
                         Rectangle {
+                            id: loadingOverlay
                             anchors.fill: parent
                             radius: parent.radius
                             color: Qt.rgba(theme.surface.r, theme.surface.g, theme.surface.b, 0.3)
                             visible: img.status === Image.Loading
                             
                             Text {
+                                id: loaderIcon
                                 anchors.centerIn: parent
                                 text: ""
                                 font.family: "Symbols Nerd Font"
@@ -313,7 +315,7 @@ PanelWindow {
                                 
                                 SequentialAnimation on rotation {
                                     loops: Animation.Infinite
-                                    running: parent.visible
+                                    running: loadingOverlay.visible
                                     NumberAnimation { from: 0; to: 360; duration: 1000 }
                                 }
                             }
