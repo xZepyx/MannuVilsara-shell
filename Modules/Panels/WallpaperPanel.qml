@@ -7,6 +7,7 @@ import Quickshell.Io
 import Quickshell.Wayland
 import qs.Core
 import qs.Services
+import qs.Modules.Corners
 
 PanelWindow {
     id: root
@@ -49,6 +50,7 @@ PanelWindow {
         target: globalState
         function onWallpaperPanelOpenChanged() {
             if (globalState.wallpaperPanelOpen) {
+                closeTimer.stop(); // Stop any pending close action
                 root.visible = true;
                 openTimer.restart();
                 updateWallpaperData();
@@ -60,6 +62,7 @@ PanelWindow {
                     wallpaperListView.positionViewAtIndex(idx, ListView.Center);
                 }
             } else {
+                openTimer.stop(); // Stop any pending open action
                 internalOpen = false;
                 closeTimer.restart();
             }
@@ -79,7 +82,7 @@ PanelWindow {
     }
 
     Timer { id: openTimer; interval: 10; onTriggered: root.internalOpen = true }
-    Timer { id: closeTimer; interval: 350; onTriggered: root.visible = false }
+    Timer { id: closeTimer; interval: 400; onTriggered: root.visible = false }
 
     Colors { id: theme }
 
@@ -88,13 +91,6 @@ PanelWindow {
         anchors.fill: parent
         onClicked: globalState.wallpaperPanelOpen = false
         z: -1
-        
-        Rectangle {
-            anchors.fill: parent
-            color: "black"
-            opacity: root.internalOpen ? 0.3 : 0
-            Behavior on opacity { NumberAnimation { duration: 350 } }
-        }
     }
 
     // --- Sliding Panel Container ---
@@ -111,10 +107,29 @@ PanelWindow {
             y: root.internalOpen ? 0 : slideContainer.height
             Behavior on y {
                 NumberAnimation { 
-                    duration: 350
+                    duration: 400
                     easing.type: Easing.OutCubic
                 }
             }
+        }
+        
+        // Inverse Corners
+        RoundCorner {
+            anchors.bottom: parent.bottom
+            anchors.right: parent.left
+            corner: RoundCorner.CornerEnum.BottomRight
+            size: 30
+            color: panelBackground.color
+            visible: root.internalOpen
+        }
+        
+        RoundCorner {
+            anchors.bottom: parent.bottom
+            anchors.left: parent.right
+            corner: RoundCorner.CornerEnum.BottomLeft
+            size: 30
+            color: panelBackground.color
+            visible: root.internalOpen
         }
 
         // --- Upward Shadow ---
@@ -162,22 +177,7 @@ PanelWindow {
             }
             
             // Border on top and sides only
-            Rectangle {
-                anchors.fill: parent
-                color: "transparent"
-                radius: 20
-                border.width: 1
-                border.color: Qt.rgba(theme.accent.r, theme.accent.g, theme.accent.b, 0.25)
-                
-                // Hide bottom border completely
-                Rectangle {
-                    anchors.bottom: parent.bottom
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: 4
-                    color: Qt.rgba(theme.bg.r, theme.bg.g, theme.bg.b, 0.98)
-                }
-            }
+
 
             // --- Horizontal Scrollable Wallpaper List ---
             ListView {
@@ -222,6 +222,9 @@ PanelWindow {
                         WallpaperService.changeWallpaper(wallpapersList[currentIndex], undefined);
                     }
                 }
+                Keys.onEscapePressed: globalState.wallpaperPanelOpen = false
+                Keys.onUpPressed: currentIndex = (currentIndex + 1) % count
+                Keys.onDownPressed: currentIndex = (currentIndex - 1 + count) % count
                 
                 // Highlight indicator
                 highlight: Rectangle {

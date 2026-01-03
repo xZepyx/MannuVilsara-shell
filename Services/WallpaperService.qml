@@ -20,7 +20,7 @@ Singleton {
     property string wallpaperCacheFile: Quickshell.env("HOME") + "/.cache/mannu/wallpapers.json"
     property string colorsCacheFile: Quickshell.env("HOME") + "/.cache/mannu/colors.json"
     property string defaultWallpaper: ""
-    property string previewDirectory: Quickshell.env("HOME") + "/.cache/mannu/wallpreviews"
+    property string previewDirectory: Quickshell.env("HOME") + "/.cache/mannu/wallpreviews_large"
 
     signal wallpaperChanged(string screenName, string path)
     signal wallpaperListChanged(string screenName, int count)
