@@ -32,13 +32,30 @@ ColumnLayout {
             Layout.preferredWidth: 42
             Layout.preferredHeight: 42
             radius: 14
+            color: "transparent"
+            clip: true
 
-            Text {
+            Image {
+                anchors.fill: parent
+                source: "file://" + Quickshell.env("HOME") + "/.face"
+                fillMode: Image.PreserveAspectCrop
+                
+                // Fallback if .face doesn't exist or fails to load
+                onStatusChanged: {
+                    if (status === Image.Error) {
+                        source = "../../Assets/arch.svg" // Or keep text based fallback
+                    }
+                }
+            }
+            
+            // Fallback Text if image fails (and we don't want to use the arch svg as fallback or if that fails too)
+             Text {
                 anchors.centerIn: parent
                 text: "󰣇"
                 font.pixelSize: 24
                 font.family: "Symbols Nerd Font"
                 color: theme.bg
+                visible: parent.children[0].status !== Image.Ready
             }
 
             gradient: Gradient {
@@ -51,9 +68,9 @@ ColumnLayout {
                     position: 1
                     color: theme.accentActive
                 }
-
             }
-
+            // Only show gradient if image is not ready
+            visible: true
         }
 
         ColumnLayout {
@@ -76,6 +93,30 @@ ColumnLayout {
 
         }
 
+        // Settings Button
+        Rectangle {
+            Layout.preferredWidth: 36
+            Layout.preferredHeight: 36
+            radius: 12
+            color: settingsBtn.pressed ? Qt.rgba(theme.text.r, theme.text.g, theme.text.b, 0.2) : "transparent"
+            border.width: 1
+            border.color: settingsBtn.pressed ? theme.text : theme.border
+
+            Text {
+                anchors.centerIn: parent
+                text: "󰒓" // Settings icon
+                font.pixelSize: 16
+                font.family: "Symbols Nerd Font"
+                color: theme.text
+            }
+
+            TapHandler {
+                id: settingsBtn
+                onTapped: globalState.toggleSettings()
+            }
+        }
+
+        // Power Button
         Rectangle {
             Layout.preferredWidth: 36
             Layout.preferredHeight: 36
