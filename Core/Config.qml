@@ -23,6 +23,7 @@ Singleton {
     property bool shellLoaded: false
     property bool debug: false
     property bool _loading: false
+    property bool hideWorkspaceNumbers: false
 
     function save() {
         if (_loading)
@@ -34,6 +35,7 @@ Singleton {
         configAdapter.disableHover = root.disableHover;
         configAdapter.floatingBar = root.floatingBar;
         configAdapter.barPosition = root.barPosition;
+        configAdapter.hideWorkspaceNumbers = root.hideWorkspaceNumbers;
         configAdapter.colors = root.colors;
         configAdapter.openRgbDevices = root.openRgbDevices;
         configAdapter.disableLockBlur = root.disableLockBlur;
@@ -52,7 +54,10 @@ Singleton {
             saveTimer.restart();
 
     }
-    Component.onCompleted: Logger.debugEnabled = debug
+    onHideWorkspaceNumbersChanged: {
+        if (!_loading)
+            saveTimer.restart();
+    }
     onFontFamilyChanged: {
         if (!_loading)
             saveTimer.restart();
@@ -133,6 +138,9 @@ Singleton {
         onLoaded: {
             root._loading = true;
             try {
+                if (configAdapter.hideWorkspaceNumbers !== undefined)
+                    root.hideWorkspaceNumbers = configAdapter.hideWorkspaceNumbers;
+
                 if (configAdapter.fontFamily)
                     root.fontFamily = configAdapter.fontFamily;
 
@@ -215,13 +223,13 @@ Singleton {
             property bool lockScreenMusicMode
             property bool lazyLoadLockScreen
             property bool debug
+            property bool hideWorkspaceNumbers
         }
 
     }
 
     Timer {
         id: saveTimer
-
         interval: 1000
         repeat: false
         onTriggered: root.save()

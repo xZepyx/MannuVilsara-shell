@@ -15,13 +15,11 @@ PanelWindow {
     required property var globalState
     property bool internalOpen: false
     
-    // Data Properties
     property int currentScreenIndex: 0
     property string wallpaperPath: WallpaperService.defaultDirectory
     property var wallpapersList: []
     property string currentWallpaper: ""
 
-    // --- Logic ---
     function updateWallpaperData() {
         if (Quickshell.screens[currentScreenIndex]) {
             var screenName = Quickshell.screens[currentScreenIndex].name;
@@ -30,7 +28,6 @@ PanelWindow {
         }
     }
 
-    // --- Window Config ---
     anchors {
         top: true
         bottom: true
@@ -47,7 +44,6 @@ PanelWindow {
     
 
 
-    // --- State Management ---
     Connections {
         target: globalState
         function onWallpaperPanelOpenChanged() {
@@ -57,7 +53,6 @@ PanelWindow {
                 openTimer.restart();
                 updateWallpaperData();
                 
-                // Scroll to current
                 var idx = wallpapersList.indexOf(currentWallpaper);
                 if (idx !== -1) {
                     wallpaperListView.currentIndex = idx;
@@ -88,14 +83,12 @@ PanelWindow {
 
     Colors { id: theme }
 
-    // --- Backdrop ---
     MouseArea {
         anchors.fill: parent
         onClicked: globalState.wallpaperPanelOpen = false
         z: -1
     }
 
-    // --- Sliding Panel Container ---
     Item {
         id: slideContainer
         
@@ -104,7 +97,6 @@ PanelWindow {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         
-        // Slide up animation
         transform: Translate {
             y: root.internalOpen ? 0 : slideContainer.height
             Behavior on y {
@@ -115,9 +107,7 @@ PanelWindow {
             }
         }
         
-        // layer.enabled: true
         
-        // Inverse Corners
         RoundCorner {
             anchors.bottom: parent.bottom
             anchors.right: parent.left
@@ -134,42 +124,19 @@ PanelWindow {
             color: panelBackground.color
         }
 
-        // // --- Upward Shadow ---
-        // Rectangle {
-        //     id: shadowSource
-        //     anchors.fill: mainPanel
-        //     anchors.topMargin: 8
-        //     radius: 20
-        //     color: "black"
-        //     visible: false
-        // }
-        // DropShadow {
-        //     anchors.fill: mainPanel
-        //     source: shadowSource
-        //     horizontalOffset: 0
-        //     verticalOffset: -8
-        //     radius: 24
-        //     samples: 32
-        //     color: Qt.rgba(0, 0, 0, 0.4)
-        //     transparentBorder: true
-        //     cached: true
-        // }
 
-        // --- Main Panel ---
         Rectangle {
             id: mainPanel
             anchors.fill: parent
             color: "transparent"
             clip: true
             
-            // Background with rounded top corners only
             Rectangle {
                 id: panelBackground
                 anchors.fill: parent
                 color: Qt.rgba(theme.bg.r, theme.bg.g, theme.bg.b, 0.98)
                 radius: 20
                 
-                // Cover bottom corners to make them square
                 Rectangle {
                     anchors.bottom: parent.bottom
                     anchors.left: parent.left
@@ -179,10 +146,8 @@ PanelWindow {
                 }
             }
             
-            // Border on top and sides only
 
 
-            // --- Horizontal Scrollable Wallpaper List ---
             ListView {
                 id: wallpaperListView
                 anchors.fill: parent
@@ -200,7 +165,6 @@ PanelWindow {
                 
                 model: wallpapersList
                 
-                // Calculate to show 3 items at once
                 property real itemWidth: (width - (spacing * 2)) / 3
                 
                 keyNavigationEnabled: true
@@ -214,7 +178,6 @@ PanelWindow {
                 flickableDirection: Flickable.HorizontalFlick
                 boundsBehavior: Flickable.StopAtBounds
                 
-                // Enter key to set wallpaper
                 Keys.onReturnPressed: {
                     if (currentItem && wallpapersList[currentIndex]) {
                         WallpaperService.changeWallpaper(wallpapersList[currentIndex], undefined);
@@ -229,7 +192,6 @@ PanelWindow {
                 Keys.onUpPressed: currentIndex = (currentIndex + 1) % count
                 Keys.onDownPressed: currentIndex = (currentIndex - 1 + count) % count
                 
-                // Highlight indicator
                 highlight: Rectangle {
                     radius: 18
                     color: "transparent"
@@ -252,12 +214,10 @@ PanelWindow {
                     width: wallpaperListView.itemWidth
                     height: wallpaperListView.height - 8  // Full height minus padding
                     
-                    // Thumbnail Card
                     Rectangle {
                         id: card
                         anchors.centerIn: parent
                         
-                        // Center item gets full width, side items get 70% width, all get full height
                         width: isCurrent ? parent.width : parent.width * 0.70
                         height: parent.height
                         
@@ -275,11 +235,9 @@ PanelWindow {
                         scale: isHovered ? 1.05 : 1.0
                         Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                         
-                        // Reduce opacity for side wallpapers
                         opacity: isCurrent ? 1.0 : 0.65
                         Behavior on opacity { NumberAnimation { duration: 300 } }
                         
-                        // Wallpaper Image
                         Image {
                             id: img
                             anchors.fill: parent
@@ -315,7 +273,6 @@ PanelWindow {
                             }
                         }
                         
-                        // Selected overlay
                         Rectangle {
                             anchors.fill: parent
                             radius: parent.radius
@@ -340,7 +297,6 @@ PanelWindow {
                             }
                         }
                         
-                        // Loading placeholder
                         Rectangle {
                             anchors.fill: parent
                             radius: parent.radius
@@ -376,7 +332,6 @@ PanelWindow {
                     }
                 }
 
-                // Hidden scrollbar
                 ScrollBar.horizontal: ScrollBar {
                     policy: ScrollBar.AlwaysOff
                 }

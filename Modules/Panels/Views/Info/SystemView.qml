@@ -19,7 +19,6 @@ Item {
     implicitWidth: 440
     implicitHeight: 360
 
-    // --- Helpers ---
     function alpha(col, val) {
         if (!col) return "transparent";
         return Qt.rgba(col.r, col.g, col.b, val);
@@ -32,7 +31,6 @@ Item {
         return bytes + " B";
     }
 
-    // Main Container Background (Glass Cockpit Feel)
     Rectangle {
         anchors.fill: parent
         radius: 32
@@ -40,7 +38,6 @@ Item {
         border.width: 1
         border.color: root.alpha(theme.fg, 0.08)
         
-        // Inner "Shadow" for depth
         Rectangle {
             anchors.fill: parent
             anchors.margins: 1
@@ -57,7 +54,6 @@ Item {
         anchors.margins: 24
         spacing: 20
 
-        // --- Header ---
         RowLayout {
             Layout.fillWidth: true
             spacing: 12
@@ -79,7 +75,6 @@ Item {
             Item { Layout.fillWidth: true }
         }
 
-        // --- Gauges Grid ---
         GridLayout {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -87,13 +82,11 @@ Item {
             rowSpacing: 20
             columnSpacing: 20
 
-            // --- CPU GAUGE ---
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 Layout.preferredHeight: 180
 
-                // Card Background
                 Rectangle {
                     anchors.fill: parent
                     radius: 24
@@ -102,12 +95,10 @@ Item {
                     border.color: root.alpha(theme.fg, 0.05)
                 }
 
-                // Gauge Component
                 Item {
                     anchors.centerIn: parent
                     width: 140; height: 140
 
-                    // Scale Ticks (The "Watch Face")
                     Repeater {
                         model: 30 // Ticks count
                         Item {
@@ -125,7 +116,6 @@ Item {
                         }
                     }
 
-                    // Active Arc
                     Shape {
                         anchors.fill: parent
                         layer.enabled: true
@@ -135,11 +125,8 @@ Item {
                             strokeColor: "transparent"
                             fillColor: "transparent"
                             
-                            // We use a conical gradient stroke simulated via another item or just solid for now for performance
-                            // Let's use a solid stroke with glow
                         }
 
-                        // The "Progress" Arc
                         ShapePath {
                             strokeColor: theme.urgent
                             strokeWidth: 6
@@ -157,7 +144,6 @@ Item {
                         }
                     }
 
-                    // Glow effect behind the arc
                     Shape {
                         anchors.fill: parent
                         opacity: 0.3
@@ -180,7 +166,6 @@ Item {
                         }
                     }
 
-                    // Center Data
                     ColumnLayout {
                         anchors.centerIn: parent
                         spacing: 2
@@ -214,7 +199,6 @@ Item {
                 }
             }
 
-            // --- RAM GAUGE ---
             Item {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
@@ -232,7 +216,6 @@ Item {
                     anchors.centerIn: parent
                     width: 140; height: 140
 
-                    // Scale Ticks
                     Repeater {
                         model: 30
                         Item {
@@ -250,7 +233,6 @@ Item {
                         }
                     }
 
-                    // Active Arc
                     Shape {
                         anchors.fill: parent
                         layer.enabled: true
@@ -272,7 +254,6 @@ Item {
                         }
                     }
                     
-                    // Glow
                     Shape {
                         anchors.fill: parent
                         opacity: 0.3
@@ -295,7 +276,6 @@ Item {
                         }
                     }
 
-                    // Center Data
                     ColumnLayout {
                         anchors.centerIn: parent
                         spacing: 2
@@ -327,7 +307,6 @@ Item {
                         }
                     }
                     
-                    // Small "Used" text at bottom of gauge
                      Text {
                         anchors.bottom: parent.bottom
                         anchors.horizontalCenter: parent.horizontalCenter
@@ -339,7 +318,6 @@ Item {
                 }
             }
 
-            // --- STORAGE RACK ---
             Item {
                 Layout.columnSpan: 2
                 Layout.fillWidth: true
@@ -358,7 +336,6 @@ Item {
                     anchors.margins: 20
                     spacing: 20
 
-                    // Icon Module
                     Rectangle {
                         width: 44; height: 44
                         radius: 12
@@ -375,7 +352,6 @@ Item {
                         }
                     }
 
-                    // Segmented Bar Display
                     ColumnLayout {
                         Layout.fillWidth: true
                         spacing: 6
@@ -399,13 +375,11 @@ Item {
                             }
                         }
 
-                        // Segmented Progress Bar
                         Row {
                             Layout.fillWidth: true
                             height: 12
                             spacing: 3
                             
-                            // Calculate number of active segments (20 total segments)
                             property int totalSegs: 24
                             property int activeSegs: Math.round((root.diskUsage / 100) * totalSegs)
 
@@ -418,7 +392,6 @@ Item {
                                     color: index < parent.activeSegs ? theme.green : root.alpha(theme.fg, 0.1)
                                     opacity: index < parent.activeSegs ? 1.0 : 0.5
                                     
-                                    // Add glow to active segments
                                     Rectangle {
                                         anchors.fill: parent
                                         radius: 2

@@ -62,10 +62,6 @@ PanelWindow {
         onClicked: root.close()
     }
     
-    // Inverse rounded corners at top
-    // Fixed: Scale is now bound to wrapper height. 
-    // They will remain full size (scale 1) until the panel height drops below their size (30px),
-    // creating the effect of "closing with" the panel.
     RoundCorner {
         corner: RoundCorner.CornerEnum.TopRight
         size: 30
@@ -76,7 +72,6 @@ PanelWindow {
         
         transformOrigin: Item.TopRight
         
-        // Scale reduces only when height < 30
         scale: Math.min(1, wrapper.height / 30)
         visible: scale > 0
     }
@@ -91,7 +86,6 @@ PanelWindow {
         
         transformOrigin: Item.TopLeft
         
-        // Scale reduces only when height < 30
         scale: Math.min(1, wrapper.height / 30)
         visible: scale > 0
     }
@@ -118,16 +112,12 @@ PanelWindow {
             }
         }
 
-        // Fixed: Menu Background is now sized to the wrapper (parent).
-        // This ensures the bottom rounded corners move up as the wrapper shrinks,
-        // preventing the "square bottom" look during animation.
         Rectangle {
             id: menuBg
             anchors.fill: parent
             color: Qt.rgba(root.colors.bg.r, root.colors.bg.g, root.colors.bg.b, 0.95)
             clip: true // Clip the content that sits inside
             
-            // Specific corners
             topLeftRadius: 0
             topRightRadius: 0
             bottomLeftRadius: 14
@@ -141,7 +131,6 @@ PanelWindow {
             Column {
                 id: menuColumn
                 
-                // Content stays anchored to top, while parent (bg) shrinks from bottom
                 anchors.top: parent.top
                 anchors.left: parent.left
                 anchors.right: parent.right

@@ -43,7 +43,6 @@ ColumnLayout {
                 onStatusChanged: {
                     if (status === Image.Error)
                         source = "../../Assets/arch.svg";
- // Or keep text based fallback
                 }
             }
 

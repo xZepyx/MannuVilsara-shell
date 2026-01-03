@@ -70,6 +70,10 @@ Rectangle {
             radius: height / 2
             clip: true
 
+            property int activeWs: Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : 1
+            property int pageIndex: Math.floor((activeWs - 1) / 5)
+            property int pageStart: pageIndex * 5 + 1
+
             MouseArea {
                 anchors.fill: parent
                 onWheel: (wheel) => {
@@ -80,67 +84,107 @@ Rectangle {
                 }
             }
 
-            ListView {
-                id: wsList
+            Rectangle {
+                id: highlight
+                
+                property int relIndex: (wsContainer.activeWs - 1) % 5
+                property real itemWidth: 26 
+                property real spacing: 4
+                
+                property real targetX1: relIndex * (itemWidth + spacing) + 2 
+                property real targetX2: targetX1
+                
+                property real animatedX1: targetX1
+                property real animatedX2: targetX2
+                
+                onTargetX1Changed: animatedX1 = targetX1
+                onTargetX2Changed: animatedX2 = targetX2
 
-                anchors.fill: parent
-                orientation: ListView.Horizontal
-                spacing: 4
-                interactive: false
-                currentIndex: (Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id - 1 : 0)
-                model: 999
+                x: Math.min(animatedX1, animatedX2)
+                width: Math.abs(animatedX2 - animatedX1) + itemWidth
+                height: 26
+                radius: 13
+                color: colors.accent
 
-                delegate: Item {
-                    property int wsIndex: index + 1
-                    property var workspace: Hyprland.workspaces.values.find((ws) => {
-                        return ws.id === wsIndex;
-                    }) ?? null
-                    property bool isActive: wsList.currentIndex === index
-                    property bool hasWindows: workspace !== null
-
-                    height: wsList.height
-                    width: indicator.width
-
-                    Rectangle {
-                        id: indicator
-
-                        anchors.centerIn: parent
-                        height: 16
-                        width: parent.isActive ? 32 : 16
-                        radius: height / 2
-                        color: (parent.isActive || parent.hasWindows) ? colors.accent : "transparent"
-                        border.color: (!parent.isActive && !parent.hasWindows) ? colors.muted : "transparent"
-                        border.width: (!parent.isActive && !parent.hasWindows) ? 2 : 0
-
-                        Behavior on width {
-                            NumberAnimation {
-                                duration: 300
-                                easing.type: Easing.OutBack
-                                easing.overshoot: 1.2
-                            }
-
-                        }
-
-                        Behavior on color {
-                            ColorAnimation {
-                                duration: 200
-                            }
-
-                        }
-
+                Behavior on animatedX1 {
+                    NumberAnimation {
+                        duration: 400 / 3
+                        easing.type: Easing.OutSine
                     }
-
-                    MouseArea {
-                        anchors.fill: parent
-                        hoverEnabled: true
-                        onClicked: Hyprland.dispatch("workspace " + parent.wsIndex)
-                        cursorShape: Qt.PointingHandCursor
-                    }
-
                 }
 
+                Behavior on animatedX2 {
+                    NumberAnimation {
+                        duration: 400
+                        easing.type: Easing.OutSine
+                    }
+                }
             }
 
+            Row {
+                anchors.fill: parent
+                anchors.leftMargin: 2
+                anchors.rightMargin: 2
+                spacing: 4
+
+                Repeater {
+                    model: 5
+                    delegate: Item {
+                        property int wsId: wsContainer.pageStart + index
+                        property bool isActive: wsId === wsContainer.activeWs
+                        property var workspace: Hyprland.workspaces.values.find(w => w.id === wsId)
+                        property bool hasWindows: workspace !== undefined && workspace !== null
+
+                        width: 26
+                        height: 26
+                        
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: width / 2
+                                color: (parent.hasWindows && !parent.isActive) ? Qt.rgba(1, 1, 1, 0.15) : "transparent"
+                                visible: (parent.hasWindows && !parent.isActive)
+                            }
+                            
+                            // Circle Indicator (Border)
+                            Rectangle {
+                                anchors.fill: parent
+                                radius: width / 2
+                                color: "transparent"
+                                
+                                border.width: (!parent.isActive && !Config.hideWorkspaceNumbers) ? (parent.hasWindows ? 2 : 1) : 0
+                                border.color: (!parent.isActive && !Config.hideWorkspaceNumbers) ? (parent.hasWindows ? colors.accent : Qt.rgba(1, 1, 1, 0.15)) : "transparent"
+                            }
+                            
+                            // Dot for hidden numbers mode
+                            Rectangle {
+                                anchors.centerIn: parent
+                                width: (parent.isActive || parent.hasWindows) ? 6 : 4
+                                height: width
+                                radius: width / 2
+                                color: parent.isActive ? colors.bg : (parent.hasWindows ? "#FFFFFF" : Qt.rgba(1, 1, 1, 0.2))
+                                visible: Config.hideWorkspaceNumbers
+                            }
+                        
+                        MouseArea {
+                            anchors.fill: parent
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: Hyprland.dispatch("workspace " + wsId)
+                        }
+
+                        Text {
+                            anchors.centerIn: parent
+                            text: wsId
+                            font.family: fontFamily
+                            font.pixelSize: fontSize
+                            font.bold: isActive
+                            color: isActive ? colors.bg : (hasWindows ? colors.accent : colors.subtext)
+                            visible: !Config.hideWorkspaceNumbers
+                            
+                            Behavior on color { ColorAnimation { duration: 200 } }
+                        }
+                    }
+                }
+            }
         }
 
         VerticalDivider {

@@ -34,6 +34,19 @@ ColumnLayout {
         }
     }
 
+    ToggleButton {
+        Layout.fillWidth: true
+        label: "Hide Workspace Numbers"
+        sublabel: "Show dots instead of numbers for workspaces"
+        icon: "󰍹"
+        active: Config.hideWorkspaceNumbers
+        colors: context.colors
+        onActiveChanged: {
+            if (Config.hideWorkspaceNumbers !== active)
+                Config.hideWorkspaceNumbers = active;
+        }
+    }
+
     SettingItem {
         label: "Bar Position"
         sublabel: "Choose where the bar appears on screen"
