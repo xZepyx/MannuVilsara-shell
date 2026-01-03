@@ -4,6 +4,7 @@ import qs.Modules.Bar
 import qs.Modules.Lock
 import qs.Modules.Overlays
 import qs.Modules.Settings
+import qs.Modules.Corners
 import qs.Services
 
 ShellRoot {
@@ -17,6 +18,10 @@ ShellRoot {
     }
 
     Lock {
+        context: ctx
+    }
+
+    ScreenCorners {
         context: ctx
     }
 
