@@ -127,8 +127,10 @@ PanelWindow {
 
         property real offset: root.internalOpen ? 20 : -height
 
-        width: Math.min(900, parent.width - 40)
-        height: 500
+        // Reduced width and height
+        width: Math.min(600, parent.width - 40)
+        height: 350
+        
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.bottom: parent.bottom
         anchors.bottomMargin: offset
@@ -281,7 +283,7 @@ PanelWindow {
                 Layout.fillWidth: true
                 Layout.fillHeight: true
                 clip: true
-                cellWidth: width / 4
+                cellWidth: width / 3 // Adjusted to 3 columns since panel is narrower
                 cellHeight: cellWidth * 0.65
                 model: filteredWallpapers
                 focus: true
