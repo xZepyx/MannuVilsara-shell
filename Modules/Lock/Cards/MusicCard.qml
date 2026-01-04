@@ -13,140 +13,142 @@ BentoCard {
     borderColor: colors.border
     layer.enabled: true
 
-    Image {
-        anchors.fill: parent
-        source: MprisService.artUrl
-        fillMode: Image.PreserveAspectCrop
-        visible: MprisService.artUrl !== ""
-        opacity: 0.2
-        layer.enabled: visible
 
-        layer.effect: FastBlur {
-            radius: 32
-        }
-
-    }
 
     ColumnLayout {
         anchors.fill: parent
-        anchors.margins: 12
+        anchors.margins: 16
         spacing: 8
 
-        RowLayout {
+        // Cover Art and Info
+        Item {
             Layout.fillWidth: true
-            spacing: 12
+            Layout.fillHeight: true
+            Layout.minimumHeight: 120
 
-            Item {
-                Layout.preferredWidth: 64
-                Layout.preferredHeight: 64
-
-                Rectangle {
-                    anchors.fill: parent
-                    radius: 12
-                    color: Qt.rgba(0, 0, 0, 0.3)
-                    visible: MprisService.artUrl === ""
+            Image {
+                anchors.fill: parent
+                source: MprisService.artUrl
+                fillMode: Image.PreserveAspectCrop
+                visible: MprisService.artUrl !== ""
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: artMask
                 }
+            }
 
-                Image {
-                    anchors.fill: parent
-                    source: MprisService.artUrl
-                    fillMode: Image.PreserveAspectCrop
-                    visible: MprisService.artUrl !== ""
-                    layer.enabled: true
+            Rectangle {
+                id: artMask
+                anchors.fill: parent
+                radius: 12
+                visible: false
+            }
 
-                    layer.effect: OpacityMask {
-
-                        maskSource: Rectangle {
-                            x: 0
-                            y: 0
-                            width: 64
-                            height: 64
-                            radius: 12
-                        }
-
-                    }
-
+            // Scrim
+            Rectangle {
+                anchors.bottom: parent.bottom
+                anchors.left: parent.left
+                anchors.right: parent.right
+                height: parent.height / 2
+                visible: MprisService.artUrl !== ""
+                gradient: Gradient {
+                    GradientStop { position: 0.0; color: "transparent" }
+                    GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.8) }
                 }
+                layer.enabled: true
+                layer.effect: OpacityMask {
+                    maskSource: artMask
+                }
+            }
+
+            Rectangle {
+                anchors.fill: parent
+                radius: 12
+                color: Qt.rgba(0, 0, 0, 0.2)
+                visible: MprisService.artUrl === ""
+                border.width: 1
+                border.color: root.colors.border
 
                 Text {
                     anchors.centerIn: parent
                     text: "󰎈"
                     font.family: "Symbols Nerd Font"
-                    font.pixelSize: 28
+                    font.pixelSize: 48
                     color: root.colors.muted
-                    visible: MprisService.artUrl === ""
                 }
-
             }
 
+            // Text Overlay
             ColumnLayout {
-                Layout.fillWidth: true
-                Layout.fillHeight: true
+                anchors.bottom: parent.bottom
+                anchors.horizontalCenter: parent.horizontalCenter
+                anchors.bottomMargin: 12
+                width: parent.width - 24
                 spacing: 2
-
-                Item {
-                    Layout.fillHeight: true
-                }
 
                 Text {
                     text: MprisService.title || "No Media Playing"
-                    color: root.colors.fg
-                    font.pixelSize: 13
-                    font.weight: Font.Bold
+                    color: "white"
+                    font.family: "JetBrainsMono Nerd Font"
+                    font.pixelSize: 18
+                    font.bold: true
                     Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
                     elide: Text.ElideRight
+                    style: Text.Outline
+                    styleColor: "black"
                 }
 
                 Text {
                     text: MprisService.artist || "Unknown Artist"
-                    color: root.colors.muted
-                    font.pixelSize: 11
+                    color: "white"
+                    opacity: 0.8
+                    font.family: "JetBrainsMono Nerd Font"
+                    font.pixelSize: 14
                     Layout.fillWidth: true
+                    horizontalAlignment: Text.AlignHCenter
                     elide: Text.ElideRight
+                    style: Text.Outline
+                    styleColor: "black"
                 }
-
-                Item {
-                    Layout.fillHeight: true
-                }
-
             }
-
         }
 
+
+
+        // Controls
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
             spacing: 24
 
+            // Prev
             Text {
-                text: "󰒮"
+                text: "󰒮" // Prev icon
                 font.family: "Symbols Nerd Font"
-                font.pixelSize: 18
+                font.pixelSize: 32 // Larger
                 color: root.colors.fg
-                opacity: 0.8
+                Layout.alignment: Qt.AlignVCenter
 
                 MouseArea {
                     anchors.fill: parent
-                    anchors.margins: -8
+                    anchors.margins: -12
                     onClicked: MprisService.previous()
                     cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-                    onEntered: parent.opacity = 1
-                    onExited: parent.opacity = 0.8
                 }
-
             }
 
+            // Play/Pause
             Rectangle {
-                width: 36
-                height: 36
-                radius: 18
+                Layout.preferredWidth: 56
+                Layout.preferredHeight: 56
+                radius: 28
                 color: root.colors.accent
 
                 Text {
                     anchors.centerIn: parent
                     text: MprisService.isPlaying ? "󰏤" : "󰐊"
                     font.family: "Symbols Nerd Font"
-                    font.pixelSize: 18
+                    font.pixelSize: 24
                     color: root.colors.bg
                 }
 
@@ -155,30 +157,24 @@ BentoCard {
                     onClicked: MprisService.playPause()
                     cursorShape: Qt.PointingHandCursor
                 }
-
             }
 
+            // Next
             Text {
-                text: "󰒭"
+                text: "󰒭" // Next icon
                 font.family: "Symbols Nerd Font"
-                font.pixelSize: 18
+                font.pixelSize: 32 // Larger
                 color: root.colors.fg
-                opacity: 0.8
+                Layout.alignment: Qt.AlignVCenter
 
                 MouseArea {
                     anchors.fill: parent
-                    anchors.margins: -8
+                    anchors.margins: -12
                     onClicked: MprisService.next()
                     cursorShape: Qt.PointingHandCursor
-                    hoverEnabled: true
-                    onEntered: parent.opacity = 1
-                    onExited: parent.opacity = 0.8
                 }
-
             }
-
         }
-
     }
 
     layer.effect: OpacityMask {

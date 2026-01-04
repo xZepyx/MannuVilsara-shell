@@ -6,7 +6,7 @@ Rectangle {
     property color cardColor: "transparent"
     property color borderColor: "gray"
 
-    color: Qt.rgba(cardColor.r, cardColor.g, cardColor.b, 0.45)
+    color: Qt.rgba(0.1, 0.1, 0.1, 0.9) // Force dark background opacity
     radius: 16
     border.width: 1
     border.color: borderColor

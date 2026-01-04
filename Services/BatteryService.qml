@@ -1,10 +1,36 @@
 import QtQuick
+import Quickshell.Io
 import qs.Core
 pragma Singleton
 
-QtObject {
+Item {
     id: root
 
+    property real percentage: 0
+    property bool charging: false
+    property bool full: percentage >= 100
+
+    Process {
+        id: batProc
+        command: ["sh", "-c", "echo $(cat /sys/class/power_supply/BAT0/capacity) $(cat /sys/class/power_supply/BAT0/status)"]
+        stdout: SplitParser {
+            onRead: (data) => {
+                const parts = data.trim().split(" ");
+                if (parts.length >= 2) {
+                    percentage = parseInt(parts[0]) || 0;
+                    charging = parts[1] === "Charging";
+                }
+            }
+        }
+    }
+
+    Timer {
+        interval: 5000
+        running: true
+        repeat: true
+        triggeredOnStart: true
+        onTriggered: batProc.running = true
+    }
     function getIcon(percent, charging, isReady) {
         if (!isReady)
             return Icons.batteryUnknown;

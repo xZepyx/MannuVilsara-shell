@@ -100,28 +100,23 @@ Item {
                 NumberAnimation {
                     target: morphContainer
                     property: "scale"
-                    from: 0
+                    from: 0.5
                     to: 1
-                    duration: 450
-                    easing.type: Easing.OutBack
-                    easing.overshoot: 1.3
+                    duration: 600
+                    easing.type: Easing.OutExpo
                 }
 
                 NumberAnimation {
                     target: morphContainer
                     property: "rotation"
-                    from: -180
+                    from: -45
                     to: 0
-                    duration: 450
-                    easing.type: Easing.OutBack
+                    duration: 600
+                    easing.type: Easing.OutExpo
                 }
-
             }
 
-            PauseAnimation {
-                duration: 250
-            }
-
+            // Expand
             ScriptAction {
                 script: root.expanded = true
             }
@@ -142,6 +137,7 @@ Item {
 
                 NumberAnimation {
                     duration: 300
+                    easing.type: Easing.OutSine
                 }
 
             }
@@ -151,6 +147,7 @@ Item {
 
                 NumberAnimation {
                     duration: 300
+                    easing.type: Easing.OutSine
                 }
 
             }
@@ -161,81 +158,91 @@ Item {
             anchors.fill: parent
             anchors.margins: 12
             opacity: root.expanded ? 1 : 0
-            scale: root.expanded ? 1 : 0.8
+            scale: root.expanded ? 1 : 0.9
 
             RowLayout {
                 anchors.fill: parent
-                spacing: 12
+                spacing: 16
                 visible: root.expanded
 
-                ColumnLayout {
-                    Layout.preferredWidth: (parent.width - 24) * 0.3
+                GridLayout {
+                    Layout.fillWidth: true
                     Layout.fillHeight: true
-                    spacing: 12
+                    columns: 3
+                    rowSpacing: 16
+                    columnSpacing: 16
 
-                    ClockCard {
+                    // Row 1
+                    ProfileCard {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         colors: root.colors
+                    }
+
+                    ColumnLayout {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        spacing: 16
+                        
+                        SystemStatsCard {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.preferredHeight: 120 // Reduced to fit
+                            colors: root.colors
+                        }
+                        
+                        ClockCard {
+                            Layout.fillWidth: true
+                            Layout.fillHeight: true
+                            Layout.preferredHeight: 120 // Reduced to fit
+                            colors: root.colors
+                        }
                     }
 
                     MusicCard {
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 130
+                        Layout.fillHeight: true
                         colors: root.colors
                     }
 
-                }
-
-                ColumnLayout {
-                    Layout.preferredWidth: (parent.width - 24) * 0.4
-                    Layout.fillHeight: true
-                    spacing: 12
-
-                    SystemInfoCard {
+                    // Row 2
+                    QuoteCard {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
+                        Layout.preferredHeight: 200 // Shorter than top row
+                        colors: root.colors
+                    }
+
+                    WeatherCard {
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        Layout.preferredHeight: 200
                         colors: root.colors
                     }
 
                     PasswordCard {
                         id: passwordCard
-
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 120
+                        Layout.fillHeight: true
+                        Layout.preferredHeight: 200
                         colors: root.colors
                         pam: root.pam
                     }
-
                 }
 
-                ColumnLayout {
-                    Layout.preferredWidth: (parent.width - 24) * 0.3
+                Sidebar {
                     Layout.fillHeight: true
-                    spacing: 12
-
-                    SystemStatsCard {
-                        Layout.fillWidth: true
-                        Layout.preferredHeight: 160
-                        colors: root.colors
-                    }
-
-                    NotificationsCard {
-                        Layout.fillWidth: true
-                        Layout.fillHeight: true
-                        colors: root.colors
-                        notifications: root.notifications
-                    }
-
+                    Layout.preferredWidth: 60
+                    colors: root.colors
                 }
-
             }
 
             Behavior on opacity {
                 enabled: !Config.disableLockAnimation
 
                 NumberAnimation {
-                    duration: 400
+                    duration: 500
+                    easing.type: Easing.OutExpo
                 }
 
             }
@@ -244,7 +251,8 @@ Item {
                 enabled: !Config.disableLockAnimation
 
                 NumberAnimation {
-                    duration: 400
+                    duration: 500
+                    easing.type: Easing.OutExpo
                 }
 
             }
@@ -255,9 +263,8 @@ Item {
             enabled: !Config.disableLockAnimation
 
             NumberAnimation {
-                duration: 500
-                easing.type: Easing.OutBack
-                easing.overshoot: 1.02
+                duration: 600
+                easing.type: Easing.OutExpo
             }
 
         }
@@ -266,9 +273,8 @@ Item {
             enabled: !Config.disableLockAnimation
 
             NumberAnimation {
-                duration: 500
-                easing.type: Easing.OutBack
-                easing.overshoot: 1.02
+                duration: 600
+                easing.type: Easing.OutExpo
             }
 
         }

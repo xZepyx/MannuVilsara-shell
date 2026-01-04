@@ -27,90 +27,11 @@ BentoCard {
 
     ColumnLayout {
         anchors.centerIn: parent
-        spacing: 16
-
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 8
-
-            RowLayout {
-                spacing: 6
-
-                BinaryColumn {
-                    value: Math.floor(root.hours / 10)
-                    bits: 2
-                    dotSize: 14
-                    activeColor: root.colors.accent
-                }
-
-                BinaryColumn {
-                    value: root.hours % 10
-                    bits: 4
-                    dotSize: 14
-                    activeColor: root.colors.accent
-                }
-
-            }
-
-            Rectangle {
-                width: 2
-                height: 80
-                radius: 1
-                color: root.colors.border
-                opacity: 0.4
-            }
-
-            RowLayout {
-                spacing: 6
-
-                BinaryColumn {
-                    value: Math.floor(root.minutes / 10)
-                    bits: 3
-                    dotSize: 14
-                    activeColor: root.colors.secondary
-                }
-
-                BinaryColumn {
-                    value: root.minutes % 10
-                    bits: 4
-                    dotSize: 14
-                    activeColor: root.colors.secondary
-                }
-
-            }
-
-            Rectangle {
-                width: 2
-                height: 80
-                radius: 1
-                color: root.colors.border
-                opacity: 0.4
-            }
-
-            RowLayout {
-                spacing: 6
-
-                BinaryColumn {
-                    value: Math.floor(root.seconds / 10)
-                    bits: 3
-                    dotSize: 14
-                    activeColor: root.colors.teal
-                }
-
-                BinaryColumn {
-                    value: root.seconds % 10
-                    bits: 4
-                    dotSize: 14
-                    activeColor: root.colors.teal
-                }
-
-            }
-
-        }
+        spacing: 12
 
         Text {
-            text: root.hours.toString().padStart(2, '0') + ":" + root.minutes.toString().padStart(2, '0') + ":" + root.seconds.toString().padStart(2, '0')
-            font.pixelSize: 20
+            text: root.hours.toString().padStart(2, '0') + ":" + root.minutes.toString().padStart(2, '0')
+            font.pixelSize: 48
             font.weight: Font.Bold
             font.family: "JetBrainsMono Nerd Font"
             color: root.colors.fg
@@ -118,12 +39,10 @@ BentoCard {
         }
 
         Text {
-            text: Qt.formatDate(new Date(), "ddd, MMM d")
-            font.pixelSize: 13
+            text: Qt.formatDate(new Date(), "dd/MM/yy")
+            font.pixelSize: 16
             color: root.colors.muted
             Layout.alignment: Qt.AlignHCenter
         }
-
     }
-
 }

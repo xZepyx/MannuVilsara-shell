@@ -4,6 +4,12 @@ import QtQuick.Layouts
 Item {
     id: root
 
+    // API Compatibility
+    property alias value: root.progress
+    property alias accentColor: root.ringColor
+    property string icon: ""
+    property var colors: null // Ignored but accepted
+
     property real progress: 0.5
     property color ringColor: "white"
     property color bgColor: "gray"
@@ -18,7 +24,7 @@ Item {
         onPaint: {
             var ctx = getContext("2d");
             ctx.reset();
-            var cx = width / 2, cy = height / 2, r = 18, lw = 4;
+            var cx = width / 2, cy = height / 2, r = Math.min(width, height) / 2 - 6, lw = 6;
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, 2 * Math.PI);
             ctx.strokeStyle = Qt.rgba(root.bgColor.r, root.bgColor.g, root.bgColor.b, 0.2);
@@ -48,6 +54,16 @@ Item {
         spacing: 0
 
         Text {
+            visible: root.icon !== ""
+            text: root.icon
+            font.family: "Symbols Nerd Font"
+            font.pixelSize: 14 // Larger for icon
+            color: root.accentColor
+            Layout.alignment: Qt.AlignHCenter
+        }
+
+        Text {
+            visible: root.icon === ""
             text: Math.round(root.progress * 100) + "%"
             color: root.textColor
             font.pixelSize: 9
@@ -56,12 +72,12 @@ Item {
         }
 
         Text {
+            visible: root.label !== ""
             text: root.label
             color: root.mutedColor
             font.pixelSize: 7
             Layout.alignment: Qt.AlignHCenter
         }
-
     }
 
 }

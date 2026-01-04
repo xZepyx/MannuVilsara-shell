@@ -1,8 +1,9 @@
 import "../Components"
-import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
+import qs.Core
 
 BentoCard {
     id: root
@@ -11,188 +12,185 @@ BentoCard {
     required property var pam
     property alias inputField: inputField
 
-    cardColor: colors.surface
-    borderColor: inputField.activeFocus ? colors.accent : colors.border
+    // Make it look like a terminal window
+    cardColor: "#1e1e2e" // Dark terminal bg
+    borderColor: inputField.activeFocus ? root.colors.accent : root.colors.border
+
+    // Blinking cursor timer
+    Timer {
+        id: cursorTimer
+        interval: 500
+        running: true
+        repeat: true
+        onTriggered: cursor.visible = !cursor.visible
+    }
 
     ColumnLayout {
         anchors.centerIn: parent
         spacing: 8
         width: parent.width - 32
 
-        RowLayout {
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 10
+        // Terminal Header
+        Text {
+            text: Quickshell.env("USER") + "@" + (hostnameProc.hostname || "arch") + ":~$ auth"
+            color: root.colors.accent 
+            font.family: "JetBrainsMono Nerd Font"
+            font.pixelSize: 12
+            Layout.alignment: Qt.AlignLeft
+            visible: true
+        }
 
-            Rectangle {
-                width: 44
-                height: 44
-                radius: 22
-                color: root.colors.surface
-                border.width: 2
-                border.color: root.colors.accent
-
-                Image {
-                    id: avatarImg
-
-                    anchors.fill: parent
-                    anchors.margins: 2
-                    source: "file://" + Quickshell.env("HOME") + "/.face"
-                    fillMode: Image.PreserveAspectCrop
-                    layer.enabled: status === Image.Ready
-
-                    layer.effect: OpacityMask {
-
-                        maskSource: Rectangle {
-                            width: avatarImg.width
-                            height: avatarImg.height
-                            radius: width / 2
-                        }
-
-                    }
-
-                }
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "󰀄"
-                    font.family: "Symbols Nerd Font"
-                    font.pixelSize: 20
-                    color: root.colors.muted
-                    visible: avatarImg.status !== Image.Ready
-                }
-
+        Process {
+            id: hostnameProc
+            property string hostname: ""
+            command: ["cat", "/etc/hostname"]
+            running: true
+            stdout: SplitParser {
+                onRead: (data) => hostnameProc.hostname = data.trim()
             }
+        }
 
+        // Input Line
+        RowLayout {
+            spacing: 0
+            
             Text {
-                text: Quickshell.env("USER") || "User"
-                color: root.colors.fg
-                font.pixelSize: 13
+                text: "> "
+                color: root.colors.secondary // Pink/Purple prompt
+                font.family: "JetBrainsMono Nerd Font"
+                font.pixelSize: 20
                 font.bold: true
             }
 
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
-            height: 36
-            radius: 18
-            color: Qt.rgba(0, 0, 0, 0.35)
-            border.width: 1
-            border.color: inputField.activeFocus ? root.colors.accent : "transparent"
-
-            TextInput {
-                id: inputField
-
-                property int shakeOffset: 0
-
-                anchors.fill: parent
-                anchors.leftMargin: 14
-                anchors.rightMargin: 14
-                verticalAlignment: TextInput.AlignVCenter
-                horizontalAlignment: TextInput.AlignHCenter
-                color: root.colors.fg
-                font.pixelSize: 13
-                font.letterSpacing: 3
-                echoMode: TextInput.Password
-                passwordCharacter: "●"
-                focus: true
-                Component.onCompleted: forceActiveFocus()
-                onAccepted: {
-                    if (text.length > 0) {
-                        root.pam.submit(text);
-                        text = "";
-                    }
-                }
-                x: anchors.leftMargin + shakeOffset
-
-                Text {
-                    anchors.centerIn: parent
-                    text: "Enter password"
-                    color: root.colors.muted
-                    font.pixelSize: 11
-                    visible: !parent.text && !parent.activeFocus
-                }
-
-                SequentialAnimation {
-                    id: shakeAnim
-
-                    loops: 2
-
-                    PropertyAnimation {
-                        target: inputField
-                        property: "shakeOffset"
-                        to: 8
-                        duration: 40
-                    }
-
-                    PropertyAnimation {
-                        target: inputField
-                        property: "shakeOffset"
-                        to: -8
-                        duration: 40
-                    }
-
-                    PropertyAnimation {
-                        target: inputField
-                        property: "shakeOffset"
-                        to: 0
-                        duration: 40
-                    }
-
-                }
-
-                Connections {
-                    function onFailure() {
-                        shakeAnim.start();
-                        inputField.color = root.colors.urgent;
-                        errorLabel.visible = true;
-                        failTimer.start();
-                    }
-
-                    function onError() {
-                        shakeAnim.start();
-                        inputField.color = root.colors.urgent;
-                        errorLabel.visible = true;
-                        failTimer.start();
-                    }
-
-                    target: root.pam
-                }
-
-                Timer {
-                    id: failTimer
-
-                    interval: 2000
-                    onTriggered: {
-                        inputField.color = root.colors.fg;
-                        errorLabel.visible = false;
-                    }
-                }
-
+            TextMetrics {
+                id: dotMetrics
+                text: "•"
+                font.family: "JetBrainsMono Nerd Font"
+                font.pixelSize: 20
+                font.bold: true
             }
 
+            Item {
+                Layout.preferredWidth: inputField.text.length * dotMetrics.width
+                Layout.preferredHeight: 30
+                
+                Behavior on Layout.preferredWidth {
+                    NumberAnimation { duration: 100; easing.type: Easing.OutQuad }
+                }
+
+                ListView {
+                    id: dotList
+                    anchors.fill: parent
+                    orientation: ListView.Horizontal
+                    layoutDirection: Qt.LeftToRight
+                    interactive: false
+                    displayMarginEnd: 1000
+                    
+                    property real dotWidth: dotMetrics.width
+                    
+                    model: inputField.text.length
+                    
+                    delegate: Text {
+                        text: "•"
+                        color: root.colors.fg
+                        font.family: "JetBrainsMono Nerd Font"
+                        font.pixelSize: 20
+                        font.bold: true
+                        
+                        transform: Scale {
+                            origin.x: ListView.view.dotWidth / 2
+                            origin.y: 15
+                        }
+                    }
+
+                    add: Transition {
+                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200 }
+                        NumberAnimation { property: "scale"; from: 0; to: 1; duration: 200; easing.type: Easing.OutBack }
+                    }
+                    
+                    remove: Transition {
+                        NumberAnimation { property: "opacity"; to: 0; duration: 200 }
+                        NumberAnimation { property: "scale"; to: 0; duration: 200 }
+                    }
+                }
+            }
+
+            // Blinking Cursor
+            Rectangle {
+                id: cursor
+                Layout.preferredWidth: 10
+                Layout.preferredHeight: 20
+                color: root.colors.fg
+                visible: true
+            }
         }
-
+        
+        // Status/Error Message
         Text {
-            id: errorLabel
-
-            text: "Incorrect Password"
+            id: statusText
+            text: "" 
             color: root.colors.urgent
+            font.family: "JetBrainsMono Nerd Font"
             font.pixelSize: 12
             font.bold: true
-            Layout.alignment: Qt.AlignHCenter
-            visible: false
-            opacity: visible ? 1 : 0
-
-            Behavior on opacity {
-                NumberAnimation {
-                    duration: 200
-                }
-
-            }
-
+            visible: text !== ""
+            Layout.topMargin: 4
         }
-
     }
 
+    // Hidden functionality
+    TextInput {
+        id: inputField
+        anchors.fill: parent
+        color: "transparent"
+        cursorVisible: false
+        selectionColor: "transparent"
+        selectedTextColor: "transparent"
+        cursorDelegate: Item {} // Render nothing
+        focus: true
+        Component.onCompleted: forceActiveFocus()
+        
+        onAccepted: {
+            if (text.length > 0) {
+                root.pam.submit(text);
+                statusText.text = "authenticating..."
+                statusText.color = root.colors.subtext
+                text = "";
+            }
+        }
+    }
+
+    Connections {
+        target: root.pam
+        
+        function onFailure() {
+            statusText.text = "ACCESS DENIED"
+            statusText.color = root.colors.urgent
+            shakeAnim.start()
+            resetTimer.start()
+        }
+        
+        function onError() {
+            statusText.text = "SYSTEM ERROR"
+            statusText.color = root.colors.urgent
+            shakeAnim.start()
+            resetTimer.start()
+        }
+    }
+
+    Timer {
+        id: resetTimer
+        interval: 2000
+        onTriggered: {
+            statusText.text = ""
+        }
+    }
+    
+    SequentialAnimation {
+        id: shakeAnim
+        loops: 3
+        PropertyAnimation { target: root; property: "x"; from: root.x; to: root.x + 8; duration: 40 }
+        PropertyAnimation { target: root; property: "x"; from: root.x + 8; to: root.x - 8; duration: 40 }
+        PropertyAnimation { target: root; property: "x"; from: root.x - 8; to: root.x; duration: 40 }
+    }
 }
