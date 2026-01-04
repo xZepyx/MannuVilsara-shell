@@ -13,12 +13,14 @@ BentoCard {
     property alias inputField: inputField
 
     // Make it look like a terminal window
-    cardColor: "#1e1e2e" // Dark terminal bg
+    cardColor: "#1e1e2e"
+    // Dark terminal bg
     borderColor: inputField.activeFocus ? root.colors.accent : root.colors.border
 
     // Blinking cursor timer
     Timer {
         id: cursorTimer
+
         interval: 500
         running: true
         repeat: true
@@ -33,7 +35,7 @@ BentoCard {
         // Terminal Header
         Text {
             text: Quickshell.env("USER") + "@" + (hostnameProc.hostname || "arch") + ":~$ auth"
-            color: root.colors.accent 
+            color: root.colors.accent
             font.family: "JetBrainsMono Nerd Font"
             font.pixelSize: 12
             Layout.alignment: Qt.AlignLeft
@@ -42,18 +44,24 @@ BentoCard {
 
         Process {
             id: hostnameProc
+
             property string hostname: ""
+
             command: ["cat", "/etc/hostname"]
             running: true
+
             stdout: SplitParser {
-                onRead: (data) => hostnameProc.hostname = data.trim()
+                onRead: (data) => {
+                    return hostnameProc.hostname = data.trim();
+                }
             }
+
         }
 
         // Input Line
         RowLayout {
             spacing: 0
-            
+
             Text {
                 text: "> "
                 color: root.colors.secondary // Pink/Purple prompt
@@ -62,73 +70,67 @@ BentoCard {
                 font.bold: true
             }
 
-            TextMetrics {
-                id: dotMetrics
-                text: "•"
-                font.family: "JetBrainsMono Nerd Font"
-                font.pixelSize: 20
-                font.bold: true
-            }
+            Row {
+                spacing: 0
 
-            Item {
-                Layout.preferredWidth: inputField.text.length * dotMetrics.width
-                Layout.preferredHeight: 30
-                
-                Behavior on Layout.preferredWidth {
-                    NumberAnimation { duration: 100; easing.type: Easing.OutQuad }
-                }
+                Repeater {
+                    model: dotModel
 
-                ListView {
-                    id: dotList
-                    anchors.fill: parent
-                    orientation: ListView.Horizontal
-                    layoutDirection: Qt.LeftToRight
-                    interactive: false
-                    displayMarginEnd: 1000
-                    
-                    property real dotWidth: dotMetrics.width
-                    
-                    model: inputField.text.length
-                    
-                    delegate: Text {
+                    Text {
+                        id: dotText
+
                         text: "•"
                         color: root.colors.fg
                         font.family: "JetBrainsMono Nerd Font"
                         font.pixelSize: 20
                         font.bold: true
-                        
-                        transform: Scale {
-                            origin.x: ListView.view.dotWidth / 2
-                            origin.y: 15
+                        scale: 0
+                        opacity: 0
+                        Component.onCompleted: entryAnim.start()
+
+                        ParallelAnimation {
+                            id: entryAnim
+
+                            NumberAnimation {
+                                target: dotText
+                                property: "opacity"
+                                to: 1
+                                duration: 150
+                            }
+
+                            NumberAnimation {
+                                target: dotText
+                                property: "scale"
+                                to: 1
+                                duration: 150
+                                easing.type: Easing.OutBack
+                            }
+
                         }
+
                     }
 
-                    add: Transition {
-                        NumberAnimation { property: "opacity"; from: 0; to: 1; duration: 200 }
-                        NumberAnimation { property: "scale"; from: 0; to: 1; duration: 200; easing.type: Easing.OutBack }
-                    }
-                    
-                    remove: Transition {
-                        NumberAnimation { property: "opacity"; to: 0; duration: 200 }
-                        NumberAnimation { property: "scale"; to: 0; duration: 200 }
-                    }
                 }
+
             }
 
             // Blinking Cursor
             Rectangle {
                 id: cursor
-                Layout.preferredWidth: 10
+
+                Layout.preferredWidth: 2
                 Layout.preferredHeight: 20
                 color: root.colors.fg
                 visible: true
             }
+
         }
-        
+
         // Status/Error Message
         Text {
             id: statusText
-            text: "" 
+
+            text: ""
             color: root.colors.urgent
             font.family: "JetBrainsMono Nerd Font"
             font.pixelSize: 12
@@ -136,61 +138,104 @@ BentoCard {
             visible: text !== ""
             Layout.topMargin: 4
         }
+
     }
 
     // Hidden functionality
     TextInput {
         id: inputField
+
         anchors.fill: parent
         color: "transparent"
         cursorVisible: false
         selectionColor: "transparent"
         selectedTextColor: "transparent"
-        cursorDelegate: Item {} // Render nothing
         focus: true
         Component.onCompleted: forceActiveFocus()
-        
+        onTextChanged: {
+            while (dotModel.count < text.length)
+                dotModel.append({
+                });
+
+            while (dotModel.count > text.length)
+                dotModel.remove(dotModel.count - 1);
+
+        }
         onAccepted: {
             if (text.length > 0) {
                 root.pam.submit(text);
-                statusText.text = "authenticating..."
-                statusText.color = root.colors.subtext
+                statusText.text = "authenticating...";
+                statusText.color = root.colors.subtext;
                 text = "";
             }
         }
+
+        // Render nothing
+        cursorDelegate: Item {
+        }
+
     }
 
     Connections {
-        target: root.pam
-        
         function onFailure() {
-            statusText.text = "ACCESS DENIED"
-            statusText.color = root.colors.urgent
-            shakeAnim.start()
-            resetTimer.start()
+            statusText.text = "ACCESS DENIED";
+            statusText.color = root.colors.urgent;
+            shakeAnim.start();
+            resetTimer.start();
         }
-        
+
         function onError() {
-            statusText.text = "SYSTEM ERROR"
-            statusText.color = root.colors.urgent
-            shakeAnim.start()
-            resetTimer.start()
+            statusText.text = "SYSTEM ERROR";
+            statusText.color = root.colors.urgent;
+            shakeAnim.start();
+            resetTimer.start();
         }
+
+        target: root.pam
     }
 
     Timer {
         id: resetTimer
+
         interval: 2000
         onTriggered: {
-            statusText.text = ""
+            statusText.text = "";
         }
     }
-    
+
+    ListModel {
+        id: dotModel
+    }
+
     SequentialAnimation {
         id: shakeAnim
+
         loops: 3
-        PropertyAnimation { target: root; property: "x"; from: root.x; to: root.x + 8; duration: 40 }
-        PropertyAnimation { target: root; property: "x"; from: root.x + 8; to: root.x - 8; duration: 40 }
-        PropertyAnimation { target: root; property: "x"; from: root.x - 8; to: root.x; duration: 40 }
+
+        PropertyAnimation {
+            target: root
+            property: "x"
+            from: root.x
+            to: root.x + 8
+            duration: 40
+        }
+
+        PropertyAnimation {
+            target: root
+            property: "x"
+            from: root.x + 8
+            to: root.x - 8
+            duration: 40
+        }
+
+        PropertyAnimation {
+            target: root
+            property: "x"
+            from: root.x - 8
+            to: root.x
+            duration: 40
+        }
+
     }
+
 }

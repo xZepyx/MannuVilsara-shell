@@ -44,5 +44,7 @@ BentoCard {
             color: root.colors.muted
             Layout.alignment: Qt.AlignHCenter
         }
+
     }
+
 }

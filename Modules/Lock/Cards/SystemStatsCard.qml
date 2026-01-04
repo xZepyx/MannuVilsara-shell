@@ -11,8 +11,13 @@ BentoCard {
     cardColor: colors.surface
     borderColor: colors.border
 
-    DiskService { id: disk }
-    VolumeService { id: volume }
+    DiskService {
+        id: disk
+    }
+
+    VolumeService {
+        id: volume
+    }
     // BatteryService and BrightnessService are Singletons, do not instantiate
 
     RowLayout {
@@ -59,5 +64,7 @@ BentoCard {
             accentColor: "#F9E2AF"
             colors: root.colors
         }
+
     }
+
 }

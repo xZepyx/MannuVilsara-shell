@@ -114,6 +114,7 @@ Item {
                     duration: 600
                     easing.type: Easing.OutExpo
                 }
+
             }
 
             // Expand
@@ -183,20 +184,21 @@ Item {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         spacing: 16
-                        
+
                         SystemStatsCard {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             Layout.preferredHeight: 120 // Reduced to fit
                             colors: root.colors
                         }
-                        
+
                         ClockCard {
                             Layout.fillWidth: true
                             Layout.fillHeight: true
                             Layout.preferredHeight: 120 // Reduced to fit
                             colors: root.colors
                         }
+
                     }
 
                     MusicCard {
@@ -222,12 +224,14 @@ Item {
 
                     PasswordCard {
                         id: passwordCard
+
                         Layout.fillWidth: true
                         Layout.fillHeight: true
                         Layout.preferredHeight: 200
                         colors: root.colors
                         pam: root.pam
                     }
+
                 }
 
                 Sidebar {
@@ -235,6 +239,7 @@ Item {
                     Layout.preferredWidth: 60
                     colors: root.colors
                 }
+
             }
 
             Behavior on opacity {

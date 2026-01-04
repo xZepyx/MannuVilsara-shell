@@ -26,6 +26,7 @@ FloatingWindow {
     }
     implicitWidth: windowWidth
     implicitHeight: windowHeight
+    minimumSize: Qt.size(800, 680)
     title: "Settings"
     color: "transparent"
 
@@ -171,6 +172,7 @@ FloatingWindow {
                         property string icon
                         property string page
                         property bool isActive: root.activePage === page
+                        property color inactiveColor: Qt.rgba(colors.fg.r, colors.fg.g, colors.fg.b, 0.5)
 
                         Layout.fillWidth: true
                         Layout.preferredHeight: 44
@@ -186,7 +188,7 @@ FloatingWindow {
                                 text: icon
                                 font.family: "Symbols Nerd Font"
                                 font.pixelSize: 18
-                                color: isActive ? colors.accent : colors.muted
+                                color: isActive ? colors.accent : inactiveColor
                                 Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                                 Layout.fillWidth: sidebarCollapsed
                                 horizontalAlignment: Text.AlignHCenter
@@ -194,7 +196,7 @@ FloatingWindow {
 
                             Text {
                                 text: label
-                                color: isActive ? colors.fg : colors.muted
+                                color: isActive ? colors.fg : inactiveColor
                                 font.pixelSize: 14
                                 font.weight: isActive ? Font.Bold : Font.Normal
                                 visible: !sidebarCollapsed
@@ -278,7 +280,7 @@ FloatingWindow {
 
                 ScrollView {
                     anchors.fill: parent
-                    anchors.topMargin: 20 
+                    anchors.topMargin: 20
                     clip: true
                     contentWidth: availableWidth
 
@@ -300,13 +302,13 @@ FloatingWindow {
                             case "Services":
                                 return "Pages/ServicesPage.qml";
                             case "About":
-                                return "Pages/AboutPage.qml";    
+                                return "Pages/AboutPage.qml";
                             default:
                                 return "Pages/GeneralPage.qml";
                             }
                         }
                         onLoaded: {
-                            item.context = context; 
+                            item.context = context;
                         }
                     }
 

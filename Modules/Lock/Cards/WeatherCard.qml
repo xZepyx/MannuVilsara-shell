@@ -1,20 +1,20 @@
 import "../Components"
 import QtQuick
 import QtQuick.Layouts
-import qs.Services
 import Quickshell
+import qs.Services
 
 BentoCard {
     id: root
 
     required property var colors
 
-    cardColor: colors.surface
-    borderColor: colors.border
-
     function execute(cmd) {
         Quickshell.execDetached(["sh", "-c", cmd]);
     }
+
+    cardColor: colors.surface
+    borderColor: colors.border
 
     ColumnLayout {
         anchors.fill: parent
@@ -32,7 +32,7 @@ BentoCard {
         Item {
             Layout.fillHeight: true
             Layout.fillWidth: true
-            
+
             Text {
                 anchors.centerIn: parent
                 text: WeatherService.icon // Fetch icon from service
@@ -40,6 +40,7 @@ BentoCard {
                 font.pixelSize: 42
                 color: root.colors.accent
             }
+
         }
 
         Text {
@@ -49,7 +50,7 @@ BentoCard {
             font.bold: true
             Layout.alignment: Qt.AlignHCenter
         }
-        
+
         Text {
             text: WeatherService.temperature + " in " + WeatherService.city
             color: root.colors.muted
@@ -57,7 +58,11 @@ BentoCard {
             Layout.alignment: Qt.AlignHCenter
         }
 
-        Item { Layout.preferredHeight: 12 } // Spacer
+        // Spacer
+        Item {
+            Layout.preferredHeight: 12
+        }
 
     }
+
 }

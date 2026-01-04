@@ -13,8 +13,6 @@ BentoCard {
     borderColor: colors.border
     layer.enabled: true
 
-
-
     ColumnLayout {
         anchors.fill: parent
         anchors.margins: 16
@@ -32,13 +30,16 @@ BentoCard {
                 fillMode: Image.PreserveAspectCrop
                 visible: MprisService.artUrl !== ""
                 layer.enabled: true
+
                 layer.effect: OpacityMask {
                     maskSource: artMask
                 }
+
             }
 
             Rectangle {
                 id: artMask
+
                 anchors.fill: parent
                 radius: 12
                 visible: false
@@ -51,14 +52,25 @@ BentoCard {
                 anchors.right: parent.right
                 height: parent.height / 2
                 visible: MprisService.artUrl !== ""
-                gradient: Gradient {
-                    GradientStop { position: 0.0; color: "transparent" }
-                    GradientStop { position: 1.0; color: Qt.rgba(0, 0, 0, 0.8) }
-                }
                 layer.enabled: true
+
+                gradient: Gradient {
+                    GradientStop {
+                        position: 0
+                        color: "transparent"
+                    }
+
+                    GradientStop {
+                        position: 1
+                        color: Qt.rgba(0, 0, 0, 0.8)
+                    }
+
+                }
+
                 layer.effect: OpacityMask {
                     maskSource: artMask
                 }
+
             }
 
             Rectangle {
@@ -76,6 +88,7 @@ BentoCard {
                     font.pixelSize: 48
                     color: root.colors.muted
                 }
+
             }
 
             // Text Overlay
@@ -111,10 +124,10 @@ BentoCard {
                     style: Text.Outline
                     styleColor: "black"
                 }
+
             }
+
         }
-
-
 
         // Controls
         RowLayout {
@@ -135,6 +148,7 @@ BentoCard {
                     onClicked: MprisService.previous()
                     cursorShape: Qt.PointingHandCursor
                 }
+
             }
 
             // Play/Pause
@@ -157,6 +171,7 @@ BentoCard {
                     onClicked: MprisService.playPause()
                     cursorShape: Qt.PointingHandCursor
                 }
+
             }
 
             // Next
@@ -173,8 +188,11 @@ BentoCard {
                     onClicked: MprisService.next()
                     cursorShape: Qt.PointingHandCursor
                 }
+
             }
+
         }
+
     }
 
     layer.effect: OpacityMask {

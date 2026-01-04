@@ -3,9 +3,9 @@ import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Layouts
 import Quickshell
+import Quickshell.Io
 import qs.Core
 import qs.Services
-import Quickshell.Io
 
 BentoCard {
     id: root
@@ -29,27 +29,30 @@ BentoCard {
                 source: "file:///home/" + Quickshell.env("USER") + "/.face"
                 fillMode: Image.PreserveAspectCrop
                 layer.enabled: true
+                // Fallback if no user icon
+                onStatusChanged: {
+                    if (status === Image.Error) {
+                        if (source.toString().endsWith("/.face"))
+                            source = "file:///home/" + Quickshell.env("USER") + "/.face.icon";
+                        else if (source.toString().endsWith("/.face.icon"))
+                            source = "/var/lib/AccountsService/icons/" + Quickshell.env("USER");
+                        else
+                            source = "../../Assets/logo.svg";
+                    }
+                }
+
                 layer.effect: OpacityMask {
+
                     maskSource: Rectangle {
                         width: 100
                         height: 100
                         radius: 50
                     }
+
                 }
-                
-                // Fallback if no user icon
-                onStatusChanged: {
-                    if (status === Image.Error) {
-                        if (source.toString().endsWith("/.face")) {
-                            source = "file:///home/" + Quickshell.env("USER") + "/.face.icon"
-                        } else if (source.toString().endsWith("/.face.icon")) {
-                            source = "/var/lib/AccountsService/icons/" + Quickshell.env("USER")
-                        } else {
-                            source = "../../Assets/logo.svg" 
-                        }
-                    }
-                }
+
             }
+
         }
 
         Text {
@@ -66,15 +69,23 @@ BentoCard {
             color: root.colors.muted
             Layout.alignment: Qt.AlignHCenter
         }
+
     }
 
     Process {
         id: hostnameProc
+
         property string hostname: "localhost"
+
         command: ["cat", "/etc/hostname"]
         running: true
+
         stdout: SplitParser {
-            onRead: (data) => hostnameProc.hostname = data.trim()
+            onRead: (data) => {
+                return hostnameProc.hostname = data.trim();
+            }
         }
+
     }
+
 }

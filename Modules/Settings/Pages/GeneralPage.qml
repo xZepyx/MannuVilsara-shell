@@ -27,7 +27,9 @@ ColumnLayout {
         colors: context.colors
 
         TextField {
-            Layout.preferredWidth: 350
+            Layout.preferredWidth: 250
+            Layout.fillWidth: true
+            clip: true
             text: Config.fontFamily
             font.family: Config.fontFamily
             font.pixelSize: 14

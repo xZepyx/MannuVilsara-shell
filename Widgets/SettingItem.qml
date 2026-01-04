@@ -15,10 +15,12 @@ Rectangle {
     radius: 12
     color: colors ? colors.surface : "#1e1e2e"
 
-    RowLayout {
+    GridLayout {
         anchors.fill: parent
         anchors.margins: 16
-        spacing: 16
+        rowSpacing: 8
+        columnSpacing: 16
+        columns: root.width > 400 ? 3 : 2
 
         Rectangle {
             visible: root.icon !== ""
@@ -53,7 +55,7 @@ Rectangle {
             Text {
                 text: root.sublabel
                 font.pixelSize: 12
-                color: root.colors ? root.colors.muted : "#a6adc8"
+                color: root.colors ? Qt.rgba(root.colors.fg.r, root.colors.fg.g, root.colors.fg.b, 0.5) : "#a6adc8"
                 visible: root.sublabel !== ""
                 Layout.fillWidth: true
                 elide: Text.ElideRight
@@ -65,7 +67,9 @@ Rectangle {
         RowLayout {
             id: container
 
-            Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+            Layout.columnSpan: root.width > 400 ? 1 : 2
+            Layout.alignment: root.width > 400 ? (Qt.AlignRight | Qt.AlignVCenter) : (Qt.AlignLeft | Qt.AlignVCenter)
+            Layout.fillWidth: root.width <= 400
             spacing: 10
         }
 

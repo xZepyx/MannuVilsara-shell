@@ -16,14 +16,6 @@ PanelWindow {
     property var animCurve: [0.05, 0, 0.133, 0.06, 0.166, 0.4, 0.208, 0.82, 0.25, 1, 1, 1]
     property var colors
 
-    colors: QtObject {
-        property color bg: "#1e1e2e"
-        property color fg: "#cdd6f4"
-        property color accent: "#cba6f7"
-        property color muted: "#45475a"
-        property color border: "#313244"
-    }
-
     function open(handle, x, y) {
         menuHandle = handle;
         let width = 240;
@@ -41,6 +33,7 @@ PanelWindow {
     color: "transparent"
     WlrLayershell.layer: WlrLayer.Overlay
     WlrLayershell.keyboardFocus: wrapper.visible ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+
     anchors {
         top: true
         bottom: true
@@ -280,6 +273,14 @@ PanelWindow {
 
         }
 
+    }
+
+    colors: QtObject {
+        property color bg: "#1e1e2e"
+        property color fg: "#cdd6f4"
+        property color accent: "#cba6f7"
+        property color muted: "#45475a"
+        property color border: "#313244"
     }
 
     mask: Region {

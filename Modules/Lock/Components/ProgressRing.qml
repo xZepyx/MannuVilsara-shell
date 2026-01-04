@@ -9,7 +9,6 @@ Item {
     property alias accentColor: root.ringColor
     property string icon: ""
     property var colors: null // Ignored but accepted
-
     property real progress: 0.5
     property color ringColor: "white"
     property color bgColor: "gray"
@@ -24,7 +23,11 @@ Item {
         onPaint: {
             var ctx = getContext("2d");
             ctx.reset();
-            var cx = width / 2, cy = height / 2, r = Math.min(width, height) / 2 - 6, lw = 6;
+            var r = Math.max(0, Math.min(width, height) / 2 - 6);
+            if (r <= 0)
+                return ;
+
+            var cx = width / 2, cy = height / 2, lw = 6;
             ctx.beginPath();
             ctx.arc(cx, cy, r, 0, 2 * Math.PI);
             ctx.strokeStyle = Qt.rgba(root.bgColor.r, root.bgColor.g, root.bgColor.b, 0.2);
@@ -78,6 +81,7 @@ Item {
             font.pixelSize: 7
             Layout.alignment: Qt.AlignHCenter
         }
+
     }
 
 }

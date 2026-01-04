@@ -57,7 +57,8 @@ ColumnLayout {
         ComboBox {
             id: positionCombo
 
-            Layout.preferredWidth: 150
+            Layout.preferredWidth: 120
+            Layout.fillWidth: true
             model: ["Top", "Bottom"]
             currentIndex: {
                 var pos = Config.barPosition.toLowerCase();
