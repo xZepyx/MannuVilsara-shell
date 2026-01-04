@@ -7,7 +7,7 @@ QtObject {
 
     property string name: "Linux"
     property string url: "https://kernel.org"
-    property string icon: "" // Default Tux icon
+    property string icon: "" 
     property string bugUrl: ""
     property string supportUrl: ""
     property string distroId: ""
@@ -29,12 +29,12 @@ QtObject {
                 const key = trimmed.substring(0, eqIdx);
                 let val = trimmed.substring(eqIdx + 1);
                 
-                // Strip quotes
+                
                 if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
                     val = val.substring(1, val.length - 1);
                 }
                 
-                // Set properties directly as we parse each line
+            
                 if (key === "NAME" && root.name === "Linux") {
                     root.name = val;
                 } else if (key === "PRETTY_NAME" && root.name === "Linux") {
@@ -53,7 +53,7 @@ QtObject {
         }
         
         onExited: (code) => {
-            // Set defaults if URLs weren't found
+            
             if (root.bugUrl === "") root.bugUrl = root.url;
             if (root.supportUrl === "") root.supportUrl = root.url;
         }
@@ -83,14 +83,14 @@ QtObject {
         };
         
         const lowerId = id.toLowerCase();
-        // Exact match
+        
         if (map[lowerId]) return map[lowerId];
         
-        // Partial match
+    
         for (let key in map) {
             if (lowerId.indexOf(key) !== -1) return map[key];
         }
         
-        return ""; // Fallback Tux
+        return ""; 
     }
 }

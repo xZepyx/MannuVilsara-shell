@@ -278,7 +278,7 @@ FloatingWindow {
 
                 ScrollView {
                     anchors.fill: parent
-                    anchors.topMargin: 20 // Space for close button
+                    anchors.topMargin: 20 
                     clip: true
                     contentWidth: availableWidth
 

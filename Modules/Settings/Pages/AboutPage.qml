@@ -7,35 +7,33 @@ import "../../../Services" as LocalServices
 ColumnLayout {
     id: root
     
-    // --- Context & Theme ---
+
     property var context
     property var colors: context.colors
     
     width: parent.width
-    spacing: 40 // Generous spacing for modern look
+    spacing: 40 
 
-    // --- Services ---
+
     LocalServices.DistroInfoService {
         id: distroInfo
     }
 
-    // --- Properties ---
+
     property string distroName: distroInfo.name
     property string distroUrl: distroInfo.url
     property string distroIcon: distroInfo.icon
     property string distroBugUrl: distroInfo.bugUrl !== "" ? distroInfo.bugUrl : distroInfo.url
     property string distroSupportUrl: distroInfo.supportUrl !== "" ? distroInfo.supportUrl : distroInfo.url
 
-    // =========================================================================
-    // SECTION 1: DISTRO HERO
-    // =========================================================================
+    
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 280
         color: colors.surface
         radius: 24
         
-        // Gradient overlay for depth
+
         Rectangle {
             anchors.fill: parent
             radius: 24
@@ -52,12 +50,12 @@ ColumnLayout {
             anchors.centerIn: parent
             spacing: 20
             
-            // Glowing Icon
+
             Item {
                 Layout.alignment: Qt.AlignHCenter
                 width: 100; height: 100
                 
-                // Glow
+
                 Rectangle {
                     anchors.centerIn: parent
                     width: 80; height: 80
@@ -76,7 +74,7 @@ ColumnLayout {
                 }
             }
             
-            // Text Info
+
             ColumnLayout {
                 spacing: 4
                 
@@ -109,14 +107,12 @@ ColumnLayout {
         }
     }
 
-    // =========================================================================
-    // SECTION 2: CORE DEVELOPERS
-    // =========================================================================
+   
     ColumnLayout {
         Layout.fillWidth: true
         spacing: 16
         
-        // Section Header
+
         RowLayout {
             spacing: 12
             Rectangle {
@@ -132,7 +128,7 @@ ColumnLayout {
             }
         }
 
-        // Responsive Grid
+        
         GridLayout {
             Layout.fillWidth: true
             columns: root.width > 500 ? 2 : 1
@@ -166,7 +162,7 @@ ColumnLayout {
                     border.width: 1
                     border.color: hoverHandler.hovered ? colors.accent : Qt.rgba(colors.border.r, colors.border.g, colors.border.b, 0.4)
                     
-                    // Hover Animations
+
                     scale: hoverHandler.hovered ? 1.02 : 1.0
                     Behavior on scale { NumberAnimation { duration: 200; easing.type: Easing.OutCubic } }
                     Behavior on border.color { ColorAnimation { duration: 200 } }
@@ -185,12 +181,12 @@ ColumnLayout {
                         anchors.margins: 16
                         spacing: 16
                         
-                        // Avatar Circle
+
                         Item {
                             Layout.preferredWidth: 68
                             Layout.preferredHeight: 68
                             
-                            // Image Container
+
                             Image {
                                 id: avatar
                                 anchors.fill: parent
@@ -198,14 +194,14 @@ ColumnLayout {
                                 sourceSize: Qt.size(68, 68)
                                 fillMode: Image.PreserveAspectCrop
                                 smooth: true
-                                visible: false // Hidden, used for mask
+                                visible: false 
                                 
                                 onStatusChanged: {
                                     if (status === Image.Error) fallback.visible = true;
                                 }
                             }
                             
-                            // Circle Mask
+                            
                             OpacityMask {
                                 anchors.fill: parent
                                 source: avatar
@@ -217,7 +213,7 @@ ColumnLayout {
                                 visible: avatar.status === Image.Ready
                             }
                             
-                            // Fallback Initials
+                            
                             Rectangle {
                                 id: fallback
                                 anchors.fill: parent
@@ -235,7 +231,6 @@ ColumnLayout {
                             }
                         }
                         
-                        // Info
                         ColumnLayout {
                             Layout.fillWidth: true
                             spacing: 4
@@ -255,7 +250,7 @@ ColumnLayout {
                             }
                         }
                         
-                        // Arrow Icon
+        
                         Rectangle {
                             width: 32; height: 32
                             radius: 16
@@ -277,9 +272,8 @@ ColumnLayout {
         }
     }
     
-    Item { Layout.fillHeight: true } // Bottom spacer
-
-    // --- Components ---
+    Item { Layout.fillHeight: true }
+    
 
     component ActionPill : Rectangle {
         id: pill
