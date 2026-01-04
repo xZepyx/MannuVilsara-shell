@@ -58,7 +58,6 @@ BentoCard {
             Layout.alignment: Qt.AlignHCenter
         }
 
-        // Spacer
         Item {
             Layout.preferredHeight: 12
         }

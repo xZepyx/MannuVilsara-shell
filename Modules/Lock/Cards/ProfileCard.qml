@@ -29,7 +29,6 @@ BentoCard {
                 source: "file:///home/" + Quickshell.env("USER") + "/.face"
                 fillMode: Image.PreserveAspectCrop
                 layer.enabled: true
-                // Fallback if no user icon
                 onStatusChanged: {
                     if (status === Image.Error) {
                         if (source.toString().endsWith("/.face"))

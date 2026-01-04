@@ -25,6 +25,7 @@ Rectangle {
     property var volumeService
     property var networkService
     property var globalState
+    required property var compositor
     property var battery: UPower.displayDevice
     property real batteryPercent: battery && battery.percentage !== undefined ? battery.percentage * 100 : 0
     property bool batteryCharging: battery && battery.state === UPowerDeviceState.Charging
@@ -53,6 +54,7 @@ Rectangle {
             colors: barRoot.colors
             fontFamily: barRoot.fontFamily
             fontSize: barRoot.fontSize
+            compositor: barRoot.compositor
         }
 
         VerticalDivider {

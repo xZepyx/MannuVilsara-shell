@@ -18,14 +18,12 @@ BentoCard {
     VolumeService {
         id: volume
     }
-    // BatteryService and BrightnessService are Singletons, do not instantiate
 
     RowLayout {
         anchors.fill: parent
         anchors.margins: 14
         spacing: 14
 
-        // Disk
         ProgressRing {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -35,7 +33,6 @@ BentoCard {
             colors: root.colors
         }
 
-        // Volume
         ProgressRing {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -45,7 +42,6 @@ BentoCard {
             colors: root.colors
         }
 
-        // Battery
         ProgressRing {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -55,7 +51,6 @@ BentoCard {
             colors: root.colors
         }
 
-        // Brightness
         ProgressRing {
             Layout.fillWidth: true
             Layout.fillHeight: true

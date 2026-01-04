@@ -13,6 +13,40 @@ QtObject {
     property string distroId: ""
     property var _proc
 
+    function _getIcon(id) {
+        const map = {
+            "arch": "",
+            "debian": "",
+            "ubuntu": "",
+            "fedora": "",
+            "opensuse": "",
+            "nixos": "",
+            "gentoo": "",
+            "linuxmint": "",
+            "elementary": "",
+            "manjaro": "",
+            "endeavouros": "",
+            "kali": "",
+            "void": "",
+            "alpine": "",
+            "pop": "",
+            "raspbian": "",
+            "centos": "",
+            "slackware": "",
+            "rhel": ""
+        };
+        const lowerId = id.toLowerCase();
+        if (map[lowerId])
+            return map[lowerId];
+
+        for (let key in map) {
+            if (lowerId.indexOf(key) !== -1)
+                return map[key];
+
+        }
+        return "";
+    }
+
     _proc: Process {
         command: ["cat", "/etc/os-release"]
         running: true
@@ -58,40 +92,6 @@ QtObject {
             }
         }
 
-    }
-
-    function _getIcon(id) {
-        const map = {
-            "arch": "",
-            "debian": "",
-            "ubuntu": "",
-            "fedora": "",
-            "opensuse": "",
-            "nixos": "",
-            "gentoo": "",
-            "linuxmint": "",
-            "elementary": "",
-            "manjaro": "",
-            "endeavouros": "",
-            "kali": "",
-            "void": "",
-            "alpine": "",
-            "pop": "",
-            "raspbian": "",
-            "centos": "",
-            "slackware": "",
-            "rhel": ""
-        };
-        const lowerId = id.toLowerCase();
-        if (map[lowerId])
-            return map[lowerId];
-
-        for (let key in map) {
-            if (lowerId.indexOf(key) !== -1)
-                return map[key];
-
-        }
-        return "";
     }
 
 }

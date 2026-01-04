@@ -12,12 +12,9 @@ BentoCard {
     required property var pam
     property alias inputField: inputField
 
-    // Make it look like a terminal window
     cardColor: "#1e1e2e"
-    // Dark terminal bg
     borderColor: inputField.activeFocus ? root.colors.accent : root.colors.border
 
-    // Blinking cursor timer
     Timer {
         id: cursorTimer
 
@@ -32,7 +29,6 @@ BentoCard {
         spacing: 8
         width: parent.width - 32
 
-        // Terminal Header
         Text {
             text: Quickshell.env("USER") + "@" + (hostnameProc.hostname || "arch") + ":~$ auth"
             color: root.colors.accent
@@ -58,7 +54,6 @@ BentoCard {
 
         }
 
-        // Input Line
         RowLayout {
             spacing: 0
 
@@ -114,7 +109,6 @@ BentoCard {
 
             }
 
-            // Blinking Cursor
             Rectangle {
                 id: cursor
 
@@ -126,7 +120,6 @@ BentoCard {
 
         }
 
-        // Status/Error Message
         Text {
             id: statusText
 
@@ -141,7 +134,6 @@ BentoCard {
 
     }
 
-    // Hidden functionality
     TextInput {
         id: inputField
 
@@ -153,13 +145,9 @@ BentoCard {
         focus: true
         Component.onCompleted: forceActiveFocus()
         onTextChanged: {
-            while (dotModel.count < text.length)
-                dotModel.append({
-                });
-
-            while (dotModel.count > text.length)
-                dotModel.remove(dotModel.count - 1);
-
+            while (dotModel.count < text.length)dotModel.append({
+            })
+            while (dotModel.count > text.length)dotModel.remove(dotModel.count - 1)
         }
         onAccepted: {
             if (text.length > 0) {
@@ -170,7 +158,6 @@ BentoCard {
             }
         }
 
-        // Render nothing
         cursorDelegate: Item {
         }
 

@@ -4,7 +4,6 @@ import QtQuick.Layouts
 Item {
     id: root
 
-    // API Compatibility
     property alias value: root.progress
     property alias accentColor: root.ringColor
     property string icon: ""

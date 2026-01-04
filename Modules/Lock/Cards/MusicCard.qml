@@ -18,7 +18,6 @@ BentoCard {
         anchors.margins: 16
         spacing: 8
 
-        // Cover Art and Info
         Item {
             Layout.fillWidth: true
             Layout.fillHeight: true
@@ -45,7 +44,6 @@ BentoCard {
                 visible: false
             }
 
-            // Scrim
             Rectangle {
                 anchors.bottom: parent.bottom
                 anchors.left: parent.left
@@ -91,7 +89,6 @@ BentoCard {
 
             }
 
-            // Text Overlay
             ColumnLayout {
                 anchors.bottom: parent.bottom
                 anchors.horizontalCenter: parent.horizontalCenter
@@ -129,12 +126,10 @@ BentoCard {
 
         }
 
-        // Controls
         RowLayout {
             Layout.alignment: Qt.AlignHCenter
             spacing: 24
 
-            // Prev
             Text {
                 text: "󰒮" // Prev icon
                 font.family: "Symbols Nerd Font"
@@ -151,7 +146,6 @@ BentoCard {
 
             }
 
-            // Play/Pause
             Rectangle {
                 Layout.preferredWidth: 56
                 Layout.preferredHeight: 56
@@ -174,7 +168,6 @@ BentoCard {
 
             }
 
-            // Next
             Text {
                 text: "󰒭" // Next icon
                 font.family: "Symbols Nerd Font"

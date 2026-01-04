@@ -11,10 +11,11 @@ Rectangle {
     required property var colors
     required property string fontFamily
     required property int fontSize
-    property int activeWs: Hyprland.focusedWorkspace ? Hyprland.focusedWorkspace.id : 1
+    property var compositor: null // To be passed from parent
+    property int activeWs: compositor ? compositor.activeWorkspace : 1
     property int pageIndex: Math.floor((activeWs - 1) / 5)
     property int pageStart: pageIndex * 5 + 1
-    property bool isSpecialOpen: Hyprland.focusedMonitor && Hyprland.focusedMonitor.lastIpcObject.specialWorkspace.name !== ""
+    property bool isSpecialOpen: compositor ? compositor.isSpecialOpen : false
 
     Layout.preferredWidth: 150
     Layout.preferredHeight: 26
@@ -22,24 +23,15 @@ Rectangle {
     radius: height / 2
     clip: true
 
-    Connections {
-        function onRawEvent(event) {
-            const n = event.name;
-            if (["activespecial", "focusedmon", "workspace", "moveworkspace"].includes(n))
-                Hyprland.refreshMonitors();
-
-        }
-
-        target: Hyprland
-    }
-
     MouseArea {
         anchors.fill: parent
         onWheel: (wheel) => {
-            if (wheel.angleDelta.y > 0)
-                Hyprland.dispatch("workspace -1");
-            else
-                Hyprland.dispatch("workspace +1");
+            if (compositor) {
+                if (wheel.angleDelta.y > 0)
+                    compositor.changeWorkspaceRelative(-1);
+                else
+                    compositor.changeWorkspaceRelative(1);
+            }
         }
     }
 
@@ -98,9 +90,9 @@ Rectangle {
                 delegate: Item {
                     property int wsId: wsContainer.pageStart + index
                     property bool isActive: wsId === wsContainer.activeWs
-                    property var workspace: Hyprland.workspaces.values.find((w) => {
+                    property var workspace: wsContainer.compositor && wsContainer.compositor.workspaces ? wsContainer.compositor.workspaces.find((w) => {
                         return w.id === wsId;
-                    })
+                    }) : null
                     property bool hasWindows: workspace !== undefined && workspace !== null
 
                     width: 26
@@ -125,7 +117,11 @@ Rectangle {
                     MouseArea {
                         anchors.fill: parent
                         cursorShape: Qt.PointingHandCursor
-                        onClicked: Hyprland.dispatch("workspace " + wsId)
+                        onClicked: {
+                            if (wsContainer.compositor)
+                                wsContainer.compositor.changeWorkspace(wsId);
+
+                        }
                     }
 
                     Text {

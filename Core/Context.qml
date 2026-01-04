@@ -1,6 +1,7 @@
 import QtQuick
 import qs.Core
 import qs.Services
+import qs.Services.Compositor
 
 Item {
     id: root
@@ -13,8 +14,8 @@ Item {
     property alias disk: diskService
     property alias time: timeService
     property alias volume: volumeService
-    property alias activeWindow: activeWindowService
-    property alias layout: layoutService
+    property alias activeWindow: compositorService
+    property alias layout: compositorService
     property alias appState: appStateService
     property var network: NetworkService
     property var bluetooth: BluetoothService
@@ -43,12 +44,8 @@ Item {
         id: timeService
     }
 
-    ActiveWindowService {
-        id: activeWindowService
-    }
-
-    LayoutService {
-        id: layoutService
+    Compositor {
+        id: compositorService
     }
 
     GlobalState {

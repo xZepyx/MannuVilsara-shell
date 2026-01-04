@@ -117,7 +117,6 @@ Item {
 
             }
 
-            // Expand
             ScriptAction {
                 script: root.expanded = true
             }
@@ -173,7 +172,6 @@ Item {
                     rowSpacing: 16
                     columnSpacing: 16
 
-                    // Row 1
                     ProfileCard {
                         Layout.fillWidth: true
                         Layout.fillHeight: true
@@ -207,7 +205,6 @@ Item {
                         colors: root.colors
                     }
 
-                    // Row 2
                     QuoteCard {
                         Layout.fillWidth: true
                         Layout.fillHeight: true

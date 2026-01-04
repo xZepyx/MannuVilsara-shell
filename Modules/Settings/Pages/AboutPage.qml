@@ -39,7 +39,6 @@ ColumnLayout {
 
     }
 
-    // Distro Card
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 180
@@ -72,7 +71,6 @@ ColumnLayout {
             anchors.margins: 24
             spacing: 24
 
-            // Logo Box
             Rectangle {
                 Layout.preferredWidth: 100
                 Layout.preferredHeight: 100
@@ -90,7 +88,6 @@ ColumnLayout {
 
             }
 
-            // Text Info
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
@@ -145,7 +142,6 @@ ColumnLayout {
 
     }
 
-    // Shell Config Card
     Rectangle {
         Layout.fillWidth: true
         Layout.preferredHeight: 140
@@ -159,7 +155,6 @@ ColumnLayout {
             anchors.margins: 24
             spacing: 24
 
-            // Logo Box
             Item {
                 Layout.preferredWidth: 80
                 Layout.preferredHeight: 80
@@ -175,7 +170,6 @@ ColumnLayout {
 
             }
 
-            // Text Info
             ColumnLayout {
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
@@ -227,7 +221,6 @@ ColumnLayout {
 
     }
 
-    // Core Developers Header
     RowLayout {
         Layout.topMargin: 16
         spacing: 12
@@ -248,7 +241,6 @@ ColumnLayout {
 
     }
 
-    // Devs Grid
     GridLayout {
         Layout.fillWidth: true
         columns: root.width > 600 ? 2 : 1
@@ -305,9 +297,9 @@ ColumnLayout {
                             smooth: true
                             visible: false
                             onStatusChanged: {
-                                if (status === Image.Error) {
+                                if (status === Image.Error)
                                     fallback.visible = true;
-                                }
+
                             }
                         }
 

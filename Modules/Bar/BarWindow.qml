@@ -43,6 +43,7 @@ Variants {
             volumeService: root.context.volume
             networkService: root.context.network
             globalState: root.context.appState
+            compositor: root.context.activeWindow
         }
 
     }
