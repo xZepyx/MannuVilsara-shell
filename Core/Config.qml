@@ -24,7 +24,11 @@ Singleton {
     property bool debug: false
     property bool _loading: false
     property bool hideWorkspaceNumbers: false
+<<<<<<< HEAD
     property bool hideAppIcons: false
+=======
+    property bool use24HourFormat: true
+>>>>>>> 3d5fb07 (24-hour time toggle working)
 
     function save() {
         if (_loading)
@@ -46,6 +50,7 @@ Singleton {
         configAdapter.lockScreenMusicMode = root.lockScreenMusicMode;
         configAdapter.lazyLoadLockScreen = root.lazyLoadLockScreen;
         configAdapter.debug = root.debug;
+        configAdapter.use24HourFormat = root.use24HourFormat;
         configFile.writeAdapter();
         Logger.d("Config", "Settings saved to " + root.configPath);
     }
@@ -131,6 +136,11 @@ Singleton {
             saveTimer.restart();
 
     }
+    onUse24HourFormatChanged: {
+        if (!_loading)
+            saveTimer.restart();
+
+    }
 
     FileView {
         id: configFile
@@ -191,6 +201,9 @@ Singleton {
                 if (configAdapter.debug !== undefined)
                     root.debug = configAdapter.debug;
 
+                if (configAdapter.use24HourFormat !== undefined)
+                    root.use24HourFormat = configAdapter.use24HourFormat;
+
                 if (configAdapter.openRgbDevices !== undefined) {
                     var dev = configAdapter.openRgbDevices;
                     var flatList = [];
@@ -235,7 +248,11 @@ Singleton {
             property bool lazyLoadLockScreen
             property bool debug
             property bool hideWorkspaceNumbers
+<<<<<<< HEAD
             property bool hideAppIcons
+=======
+            property bool use24HourFormat
+>>>>>>> 3d5fb07 (24-hour time toggle working)
         }
 
     }
