@@ -105,16 +105,33 @@ Item {
             if (item.notifId === targetId) {
                  if (item.ref) {
                     try {
-                        // FIX: Iterate the actual native action objects to find the one to invoke
                         var nativeActions = item.ref.actions;
                         var actionInvoked = false;
                         
-                        if (nativeActions) {
+                        if (nativeActions && nativeActions.length > 0) {
                             for (var k = 0; k < nativeActions.length; k++) {
-                                // Match the ID sent from UI (convert to string to be safe)
-                                if (String(nativeActions[k].id) === String(actionId)) {
-                                    Logger.d("NotifMan", "Found native action object. Invoking...");
-                                    nativeActions[k].invoke();
+                                var nativeAction = nativeActions[k];
+                                var nativeId = "";
+                                
+                                // Extract ID from different possible formats
+                                if (typeof nativeAction === 'string') {
+                                    // String format "key=Label" - extract key
+                                    nativeId = nativeAction.split('=')[0];
+                                } else if (nativeAction && typeof nativeAction === 'object') {
+                                    // Object format - try different property names
+                                    nativeId = nativeAction.identifier || nativeAction.key || nativeAction.id || "";
+                                }
+                                
+                                Logger.d("NotifMan", "Checking native action", k, "- ID:", nativeId, "against:", actionId);
+                                
+                                if (nativeId === actionId) {
+                                    Logger.d("NotifMan", "Found matching action. Invoking...");
+                                    if (typeof nativeAction.invoke === 'function') {
+                                        nativeAction.invoke();
+                                    } else {
+                                        // For string format, invoke with the key
+                                        item.ref.invoke(actionId);
+                                    }
                                     actionInvoked = true;
                                     break;
                                 }
@@ -122,7 +139,9 @@ Item {
                         }
 
                         if (!actionInvoked) {
-                            Logger.w("NotifMan", "Action ID '" + actionId + "' not found in native actions list.");
+                            Logger.w("NotifMan", "Action ID '" + actionId + "' not found. Trying direct invoke...");
+                            // Fallback: try invoking directly on the notification with the action ID
+                            item.ref.invoke(actionId);
                         }
 
                         // Usually actions dismiss the notification
